@@ -2,22 +2,10 @@
   <section class="container">
     <div>
       <logo />
-      <h1 class="title">
-        spectrum
-      </h1>
-      <h2 class="subtitle">
-        My bee&#39;s knees Nuxt.js project
-      </h2>
+      <h1 class="title">spectrum</h1>
+      <h2 class="subtitle">My bee&#39;s knees Nuxt.js project</h2>
       <div class="links">
-        <a href="https://nuxtjs.org/" target="_blank" class="button--green"
-          >Documentation</a
-        >
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-          >GitHub</a
-        >
+        <button @click="init">Audio</button>
       </div>
     </div>
   </section>
@@ -25,10 +13,28 @@
 
 <script>
 import Logo from '~/components/Logo.vue'
+// import Main from '../assets/js/Main.js'
+import FFT from '../assets/js/fft.js'
 
 export default {
+  name: 'Index',
   components: {
     Logo
+  },
+  methods: {
+    init() {
+      try {
+        // const spectrum = new Main()
+        const fft = new FFT(1024 * 8)
+        console.log(typeof mp3)
+        console.log(fft)
+        const context = new AudioContext()
+
+        console.log(bufferLoader)
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 }
 </script>

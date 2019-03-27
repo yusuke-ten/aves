@@ -15,6 +15,7 @@
 import Logo from '~/components/Logo.vue'
 // import Main from '../assets/js/Main.js'
 import FFT from '../assets/js/fft.js'
+import mp3 from '../sample.mp3'
 
 export default {
   name: 'Index',
@@ -28,9 +29,7 @@ export default {
         const fft = new FFT(1024 * 8)
         console.log(typeof mp3)
         console.log(fft)
-        const context = new AudioContext()
-
-        console.log(bufferLoader)
+        // const context = new AudioContext()
       } catch (error) {
         console.log(error)
       }

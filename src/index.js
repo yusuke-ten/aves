@@ -1,6 +1,5 @@
 function init() {
-  console.log('init')
-
+  // オーディオコンテクストを取得（ベンダープレフィックス含む）
   window.AudioContext = window.AudioContext || window.webkitAudioContext
   var context = new AudioContext()
 
@@ -17,7 +16,6 @@ function init() {
         request.response,
         function(buffer) {
           console.log(buffer)
-          dogBarkingBuffer = buffer
         },
         function(error) {
           console.log(error)

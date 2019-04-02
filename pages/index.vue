@@ -15,7 +15,7 @@
 import Logo from '~/components/Logo.vue'
 // import Main from '../assets/js/Main.js'
 import FFT from '../assets/js/fft.js'
-import mp3 from '../sample.mp3'
+const mp3 = require('../sample.mp3').Buffer
 
 export default {
   name: 'Index',
@@ -25,9 +25,11 @@ export default {
   methods: {
     init() {
       try {
+        const buf = Buffer.from('hellow buffer')
+        console.log(buf.length)
         // const spectrum = new Main()
         const fft = new FFT(1024 * 8)
-        console.log(typeof mp3)
+        // console.log(typeof mp3)
         console.log(fft)
         // const context = new AudioContext()
       } catch (error) {

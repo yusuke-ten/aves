@@ -1,32 +1,5 @@
-import * as dat from 'dat.gui'
-import fft from './fft'
-import audioProcesser from './audioProcesser'
-// import audioProcesser from './audioProcesser'
 
-// function draw() {
-//   let WIDTH = 500
-//   let HEIGHT = 500
-
-//   let drawVisual = requestAnimationFrame(() => this.draw())
-
-//   this.analyser.getByteFrequencyData(this.dataArray)
-
-//   this.canvasCtx.fillStyle = 'rgb(0, 0, 0)'
-//   this.canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
-
-//   var barWidth = (WIDTH / this.bufferLength) * 2.5
-//   var barHeight
-//   var x = 0
-
-//   for (var i = 0; i < this.bufferLength; i++) {
-//     barHeight = this.dataArray[i]
-
-//     this.canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'
-//     this.canvasCtx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight / 2)
-
-//     x += barWidth + 1
-//   }
-// }
+import AnalyzerNode from './analyzerNode'
 
 function init() {
   const canvas = document.querySelector('#canvas')
@@ -43,15 +16,47 @@ function init() {
 
     // Decode asynchronously
     request.onload = function() {
-      var audioData = request.response
-      const audio = new audioProcesser()
-      audio.decodeAudio(audioData).then(function() {
-        console.log('temp')
-        audio.start()
-      })
+      audioLoad(request.response)
     }
     request.send()
   })
+  function draw(analyzer) {
+    let WIDTH = 500
+    let HEIGHT = 500
+
+    let drawVisual = requestAnimationFrame(() => draw(analyzer))
+
+    analyzer.analyser.getByteFrequencyData(analyzer.dataArray)
+
+    canvasCtx.fillStyle = 'rgb(0, 0, 0)'
+    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
+
+    var barWidth = (WIDTH / analyzer.bufferLength) * 2.5
+    var barHeight
+    var x = 0
+
+    for (var i = 0; i < analyzer.bufferLength; i++) {
+      barHeight = analyzer.dataArray[i]
+
+      canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'
+      canvasCtx.fillRect(
+        x,
+        HEIGHT - barHeight / 2,
+        barWidth,
+        barHeight / 2
+      )
+
+      x += barWidth + 1
+    }
+  }
+  function audioLoad(audioData) {
+    const analyzer = new AnalyzerNode()
+    analyzer.decodeAudio(audioData).then(function() {
+      console.log('temp')
+      analyzer.start()
+      draw(analyzer)
+    })
+  }
 }
 
 window.onload = init

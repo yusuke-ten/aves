@@ -1,13 +1,18 @@
+
 export default class {
   constructor() {
     window.AudioContext = window.AudioContext || window.webkitAudioContext
     this.audioCtx = new AudioContext()
     this.source = this.audioCtx.createBufferSource()
     this.analyser = this.audioCtx.createAnalyser()
-    this.analyser.minDecibels = -90
-    this.analyser.maxDecibels = -10
-    this.analyser.smoothingTimeConstant = 0.85
-    this.analyser.fftSize = 256
+    // デフォルトは2048
+    this.analyser.fftSize = 2048
+    this.source.connect(this.analyser)
+    this.analyser.connect(this.audioCtx.destination)
+    // this.analyser.fftSizeの半分の値
+    this.bufferLength = this.analyser.frequencyBinCount
+    
+    this.dataArray = new Uint8Array(this.bufferLength)
   }
   decodeAudio(audioData) {
     return this.audioCtx.decodeAudioData(audioData).then(buffer => {
@@ -15,11 +20,6 @@ export default class {
     })
   }
   start() {
-    console.log(this)
-    this.source.connect(this.analyser)
-    this.analyser.connect(this.audioCtx.destination)
-    this.bufferLength = this.analyser.frequencyBinCount
-    this.dataArray = new Uint8Array(this.bufferLength)
     this.source.start(0)
   }
   // get dataArray() {

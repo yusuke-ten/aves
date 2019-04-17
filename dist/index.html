@@ -6,7 +6,26 @@
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" media="screen" href="/main.css" />
-    <script src="main.js"></script>
+    <script src="index.js"></script>
+    <script>
+      window.onload = function() {
+        const elm = document.querySelector('#start')
+        elm.addEventListener('click', function() {
+          var request = new XMLHttpRequest()
+          const url = 'sample.mp3'
+          request.open('GET', url, true)
+          request.responseType = 'arraybuffer'
+
+          // Decode asynchronously
+          request.onload = function() {
+            const audioData = request.response
+            const sa = new SpectrumAnalyzer(audioData)
+            
+          }
+          request.send()
+        })
+      }
+    </script>
   </head>
   <body>
     <button id="start">start</button>

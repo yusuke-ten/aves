@@ -1,4 +1,14 @@
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["SpectrumAnalyzer"] = factory();
+	else
+		root["SpectrumAnalyzer"] = factory();
+})(window, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -81,20 +91,78 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/index.js":
+/***/ "./src/index.ts":
 /*!**********************!*\
-  !*** ./src/index.js ***!
+  !*** ./src/index.ts ***!
   \**********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-eval("\n\n//# sourceURL=webpack:///./src/index.js?");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var default_1 = /** @class */ (function () {
+    function default_1() {
+        console.log('construct');
+    }
+    return default_1;
+}());
+/* harmony default export */ __webpack_exports__["default"] = (default_1);
+// import AnalyzerNode from './audioSpectrum'
+// function init() {
+//   const canvas: HTMLCanvasElement = document.querySelector('#canvas')
+//   canvas.width = 500
+//   canvas.height = 500
+//   const canvasCtx = canvas.getContext('2d')
+//   canvasCtx.clearRect(0, 0, 500, 500)
+//   const elm = document.querySelector('#start')
+//   elm.addEventListener('click', function() {
+//     var request = new XMLHttpRequest()
+//     const url = 'sample.mp3'
+//     request.open('GET', url, true)
+//     request.responseType = 'arraybuffer'
+//     // Decode asynchronously
+//     request.onload = function() {
+//       const audioData: ArrayBuffer = request.response
+//       audioLoad(audioData)
+//     }
+//     request.send()
+//   })
+//   function draw(analyzer) {
+//     let WIDTH = 500
+//     let HEIGHT = 500
+//     let drawVisual = requestAnimationFrame(() => draw(analyzer))
+//     analyzer._analyser.getByteFrequencyData(analyzer._dataArray)
+//     canvasCtx.fillStyle = 'rgb(0, 0, 0)'
+//     canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
+//     var barWidth = (WIDTH / analyzer._bufferLength) * 2.5
+//     var barHeight
+//     var x = 0
+//     for (var i = 0; i < analyzer._bufferLength; i++) {
+//       barHeight = analyzer._dataArray[i]
+//       canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'
+//       canvasCtx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight / 2)
+//       x += barWidth + 1
+//     }
+//   }
+//   function audioLoad(audioData: ArrayBuffer) {
+//     const analyzer = new AnalyzerNode()
+//     analyzer.decodeAudio(audioData).then(function() {
+//       console.log('temp')
+//       analyzer.start()
+//       draw(analyzer)
+//     })
+//   }
+// }
+// window.onload = init
+
 
 /***/ })
 
-/******/ });
+/******/ })["default"];
+});
+//# sourceMappingURL=index.js.map

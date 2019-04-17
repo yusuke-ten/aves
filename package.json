@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/yusuke-ten/audio-spectrum#readme",
   "devDependencies": {
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.4.3",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.2.1"

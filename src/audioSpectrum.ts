@@ -26,6 +26,9 @@ export default class {
   start() {
     this._source.start(0)
   }
+  setFrequency() {
+    this._analyser.getByteFrequencyData(this._dataArray)
+  }
   // get dataArray() {
   //   return this.dataArray
   // }

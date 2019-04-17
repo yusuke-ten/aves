@@ -11,28 +11,32 @@ export default class {
     this._canvasCtx = this._canvasElm.getContext('2d')
     this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight)
   }
-  draw(analyzer: audioSpectrum) {
-    console.log(this._canvasCtx);
-    
-    let drawVisual = requestAnimationFrame(() => this.draw(analyzer))
+  draw(spectrum: audioSpectrum) {
+    let drawVisual = requestAnimationFrame(() => this.draw(spectrum))
 
-    analyzer._analyser.getByteFrequencyData(analyzer._dataArray)
+    spectrum.setFrequency()
 
     this._canvasCtx.fillStyle = 'rgb(0, 0, 0)'
     this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
 
-    const barWidth: number = (this._canvasWidth / analyzer._bufferLength) * 2.5
+    const barWidth: number = (this._canvasWidth / spectrum._bufferLength) * 2.5
 
     let barHeight: number
     var x = 0
+    let barHeightArray = []
 
-    for (var i = 0; i < analyzer._bufferLength; i++) {
+    for (var i = 0; i < spectrum._bufferLength; i++) {
+      barHeight = spectrum._dataArray[i]
+      barHeightArray.push(barHeight)
 
+      this._canvasCtx.fillStyle = 'rgb(0,50,50)'
+      console.log({
+        x: x,
+        y: this._canvasHeight - barHeight / 2,
+        z: barWidth,
+        a: barHeight / 2
+      })
 
-      barHeight = analyzer._dataArray[i]
-      
-
-      this._canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'
       this._canvasCtx.fillRect(
         x,
         this._canvasHeight - barHeight / 2,
@@ -42,5 +46,6 @@ export default class {
 
       x += barWidth + 1
     }
+    console.log(barHeightArray)
   }
 }

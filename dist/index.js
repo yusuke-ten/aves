@@ -96,6 +96,48 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/audioSpectrum.ts":
+/*!******************************!*\
+  !*** ./src/audioSpectrum.ts ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var default_1 = /** @class */ (function () {
+    // private
+    function default_1() {
+        this._audioCtx = new AudioContext();
+        this._source = this._audioCtx.createBufferSource();
+        this._analyser = this._audioCtx.createAnalyser();
+        // デフォルトは2048
+        this._analyser.fftSize = 2048;
+        this._source.connect(this._analyser);
+        this._analyser.connect(this._audioCtx.destination);
+        // this._analyser.fftSizeの半分の値
+        this._bufferLength = this._analyser.frequencyBinCount;
+        this._dataArray = new Uint8Array(this._bufferLength);
+    }
+    default_1.prototype.decodeAudio = function (audioData) {
+        var _this = this;
+        return this._audioCtx.decodeAudioData(audioData).then(function (buffer) {
+            _this._source.buffer = buffer;
+        });
+    };
+    default_1.prototype.start = function () {
+        this._source.start(0);
+    };
+    default_1.prototype.setFrequency = function () {
+        this._analyser.getByteFrequencyData(this._dataArray);
+    };
+    return default_1;
+}());
+/* harmony default export */ __webpack_exports__["default"] = (default_1);
+
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
@@ -105,20 +147,32 @@ return /******/ (function(modules) { // webpackBootstrap
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _spectrumCanvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./spectrumCanvas */ "./src/spectrumCanvas.ts");
+/* harmony import */ var _audioSpectrum__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./audioSpectrum */ "./src/audioSpectrum.ts");
+
+
 var default_1 = /** @class */ (function () {
-    function default_1() {
-        console.log('construct');
+    function default_1(audioData) {
+        console.log(audioData);
+        this._canvas = new _spectrumCanvas__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        this.init(audioData);
     }
+    default_1.prototype.init = function (audioData) {
+        var _this = this;
+        this._analyzer = new _audioSpectrum__WEBPACK_IMPORTED_MODULE_1__["default"]();
+        this._analyzer.decodeAudio(audioData).then(function () {
+            console.log('decodeAudio');
+            _this._analyzer.start();
+            _this._canvas.draw(_this._analyzer);
+        });
+    };
     return default_1;
 }());
 /* harmony default export */ __webpack_exports__["default"] = (default_1);
 // import AnalyzerNode from './audioSpectrum'
 // function init() {
-//   const canvas: HTMLCanvasElement = document.querySelector('#canvas')
-//   canvas.width = 500
-//   canvas.height = 500
-//   const canvasCtx = canvas.getContext('2d')
-//   canvasCtx.clearRect(0, 0, 500, 500)
+//   
+//   
 //   const elm = document.querySelector('#start')
 //   elm.addEventListener('click', function() {
 //     var request = new XMLHttpRequest()
@@ -132,33 +186,61 @@ var default_1 = /** @class */ (function () {
 //     }
 //     request.send()
 //   })
-//   function draw(analyzer) {
-//     let WIDTH = 500
-//     let HEIGHT = 500
-//     let drawVisual = requestAnimationFrame(() => draw(analyzer))
-//     analyzer._analyser.getByteFrequencyData(analyzer._dataArray)
-//     canvasCtx.fillStyle = 'rgb(0, 0, 0)'
-//     canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
-//     var barWidth = (WIDTH / analyzer._bufferLength) * 2.5
-//     var barHeight
-//     var x = 0
-//     for (var i = 0; i < analyzer._bufferLength; i++) {
-//       barHeight = analyzer._dataArray[i]
-//       canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'
-//       canvasCtx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight / 2)
-//       x += barWidth + 1
-//     }
-//   }
+//   
 //   function audioLoad(audioData: ArrayBuffer) {
-//     const analyzer = new AnalyzerNode()
-//     analyzer.decodeAudio(audioData).then(function() {
-//       console.log('temp')
-//       analyzer.start()
-//       draw(analyzer)
-//     })
+//     
 //   }
 // }
 // window.onload = init
+
+
+/***/ }),
+
+/***/ "./src/spectrumCanvas.ts":
+/*!*******************************!*\
+  !*** ./src/spectrumCanvas.ts ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var default_1 = /** @class */ (function () {
+    function default_1() {
+        this._canvasWidth = 500;
+        this._canvasHeight = 500;
+        this._canvasElm = document.querySelector('#canvas');
+        this._canvasCtx = this._canvasElm.getContext('2d');
+        this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
+    }
+    default_1.prototype.draw = function (spectrum) {
+        var _this = this;
+        var drawVisual = requestAnimationFrame(function () { return _this.draw(spectrum); });
+        spectrum.setFrequency();
+        this._canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
+        var barWidth = (this._canvasWidth / spectrum._bufferLength) * 2.5;
+        var barHeight;
+        var x = 0;
+        var barHeightArray = [];
+        for (var i = 0; i < spectrum._bufferLength; i++) {
+            barHeight = spectrum._dataArray[i];
+            barHeightArray.push(barHeight);
+            this._canvasCtx.fillStyle = 'rgb(0,50,50)';
+            console.log({
+                x: x,
+                y: this._canvasHeight - barHeight / 2,
+                z: barWidth,
+                a: barHeight / 2
+            });
+            this._canvasCtx.fillRect(x, this._canvasHeight - barHeight / 2, barWidth, barHeight / 2);
+            x += barWidth + 1;
+        }
+        console.log(barHeightArray);
+    };
+    return default_1;
+}());
+/* harmony default export */ __webpack_exports__["default"] = (default_1);
 
 
 /***/ })

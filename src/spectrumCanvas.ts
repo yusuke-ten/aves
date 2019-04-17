@@ -12,7 +12,7 @@ export default class {
     this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight)
   }
   draw(analyzer: audioSpectrum) {
-    console.log('draw');
+    console.log(this._canvasCtx);
     
     let drawVisual = requestAnimationFrame(() => this.draw(analyzer))
 
@@ -21,12 +21,16 @@ export default class {
     this._canvasCtx.fillStyle = 'rgb(0, 0, 0)'
     this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
 
-    var barWidth = (this._canvasWidth / analyzer._bufferLength) * 2.5
-    var barHeight
+    const barWidth: number = (this._canvasWidth / analyzer._bufferLength) * 2.5
+
+    let barHeight: number
     var x = 0
 
     for (var i = 0; i < analyzer._bufferLength; i++) {
+
+
       barHeight = analyzer._dataArray[i]
+      
 
       this._canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'
       this._canvasCtx.fillRect(

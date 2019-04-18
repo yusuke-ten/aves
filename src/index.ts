@@ -11,7 +11,7 @@ export default class {
 
   async loadAudio(audioData: ArrayBuffer): Promise<AudioBufferSourceNode> {
     try {
-      return await this._audio.decodeAudio(audioData)
+      return await this._audio.decodeAudio(audioData) 
     } catch (error) {
       console.log(error)
     }

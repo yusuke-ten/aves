@@ -110,20 +110,29 @@ var default_1 = /** @class */ (function () {
     function default_1() {
         this._audioCtx = new AudioContext();
         this._source = this._audioCtx.createBufferSource();
-        this._analyser = this._audioCtx.createAnalyser();
-        // デフォルトは2048
-        this._analyser.fftSize = 2048;
-        this._source.connect(this._analyser);
-        this._analyser.connect(this._audioCtx.destination);
-        // this._analyser.fftSizeの半分の値
-        this._bufferLength = this._analyser.frequencyBinCount;
-        this._dataArray = new Uint8Array(this._bufferLength);
+        this._source.connect(this._audioCtx.destination);
     }
     default_1.prototype.decodeAudio = function (audioData) {
         var _this = this;
-        return this._audioCtx.decodeAudioData(audioData).then(function (buffer) {
+        return this._audioCtx
+            .decodeAudioData(audioData)
+            .then(function (buffer) {
             _this._source.buffer = buffer;
+            return _this._source;
         });
+    };
+    default_1.prototype.createanAlyser = function () {
+        this._analyser = this._audioCtx.createAnalyser();
+        // default 2048
+        this._analyser.fftSize = 2048;
+        this._analyser.maxDecibels = 255;
+        this._source.connect(this._analyser);
+        // fftSize / 2
+        this._bufferLength = this._analyser.frequencyBinCount;
+        this._dataArray = new Uint8Array(this._bufferLength);
+        this._timeDomainArray = new Uint8Array(this._bufferLength);
+        this.getByteTimeDomainData();
+        console.log(this._timeDomainArray);
     };
     default_1.prototype.start = function () {
         this._source.start(0);
@@ -133,6 +142,9 @@ var default_1 = /** @class */ (function () {
     };
     default_1.prototype.setFrequency = function () {
         this._analyser.getByteFrequencyData(this._dataArray);
+    };
+    default_1.prototype.getByteTimeDomainData = function () {
+        this._analyser.getByteTimeDomainData(this._timeDomainArray);
     };
     return default_1;
 }());
@@ -152,37 +164,42 @@ var default_1 = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 var default_1 = /** @class */ (function () {
     function default_1() {
-        this._canvasWidth = 1000;
-        this._canvasHeight = 400;
+        this._canvasWidth = 600;
+        this._canvasHeight = 255;
+        this._bgColor = 'rgb(70, 70, 70)';
         this._canvasElm = document.querySelector('#canvas');
         this._canvasElm.width = this._canvasWidth;
         this._canvasElm.height = this._canvasHeight;
         this._canvasCtx = this._canvasElm.getContext('2d');
-        this._canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        this._canvasCtx.fillStyle = this._bgColor;
         this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
         this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
         this._canvasCtx.strokeStyle = 'white';
         this._canvasCtx.strokeText('青色でstrokText', 10, 25);
     }
-    default_1.prototype.draw = function (spectrum) {
-        console.log('draw');
-        spectrum.setFrequency();
-        this._canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
+    default_1.prototype.drawAnalyser = function (spectrum) {
         var barWidth = (this._canvasWidth / spectrum._bufferLength) * 2.5;
-        var barHeight;
         var x = 0;
+        var barHeightArray = [];
         for (var i = 0; i < spectrum._bufferLength; i++) {
-            barHeight = spectrum._dataArray[i];
+            var barHeight = spectrum._dataArray[i];
+            // (spectrum._dataArray[i] / 255) * this._canvasHeight
+            barHeightArray.push(barHeight);
             this._canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
             this._canvasCtx.fillRect(x, this._canvasHeight - barHeight / 2, barWidth, barHeight / 2);
             x += barWidth + 1;
         }
+        console.log(barHeightArray);
     };
     default_1.prototype.animationStart = function (spectrum) {
         var _this = this;
-        this._animationFrameId = requestAnimationFrame(function () { return _this.animationStart(spectrum); });
-        this.draw(spectrum);
+        this._animationFrameId = requestAnimationFrame(function () {
+            return _this.animationStart(spectrum);
+        });
+        this._canvasCtx.fillStyle = this._bgColor;
+        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
+        spectrum.setFrequency();
+        this.drawAnalyser(spectrum);
     };
     default_1.prototype.animationStop = function () {
         cancelAnimationFrame(this._animationFrameId);
@@ -244,7 +261,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 var default_1 = /** @class */ (function () {
     function default_1() {
-        this._analyser = new _audio__WEBPACK_IMPORTED_MODULE_1__["default"]();
+        this._audio = new _audio__WEBPACK_IMPORTED_MODULE_1__["default"]();
         this._canvas = new _canvas__WEBPACK_IMPORTED_MODULE_0__["default"]();
     }
     default_1.prototype.loadAudio = function (audioData) {
@@ -253,29 +270,28 @@ var default_1 = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, 3, 4]);
-                        return [4 /*yield*/, this._analyser.decodeAudio(audioData)];
-                    case 1:
-                        _a.sent();
-                        console.log('decodeAudio');
-                        return [3 /*break*/, 4];
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this._audio.decodeAudio(audioData)];
+                    case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_1 = _a.sent();
                         console.log(error_1);
-                        return [3 /*break*/, 4];
+                        return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
-                    case 4: return [2 /*return*/];
                 }
             });
         });
     };
     default_1.prototype.start = function () {
-        this._analyser.start();
-        this._canvas.animationStart(this._analyser);
+        this._audio.start();
+        this._canvas.animationStart(this._audio);
     };
     default_1.prototype.stop = function () {
-        this._analyser.stop();
+        this._audio.stop();
         this._canvas.animationStop();
+    };
+    default_1.prototype.analyser = function () {
+        this._audio.createanAlyser();
     };
     return default_1;
 }());

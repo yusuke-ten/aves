@@ -1,9 +1,10 @@
 export default class {
   private _audioCtx: AudioContext
   public _source: AudioBufferSourceNode
-  public _analyser: AnalyserNode
+  public _analyserNode: AnalyserNode
   public _bufferLength: number
-  public _dataArray: Uint8Array
+  public _spectrum: Uint8Array
+  public _timeDomainArray: Uint8Array
   // private
   constructor() {
     this._audioCtx = new AudioContext()
@@ -19,15 +20,18 @@ export default class {
       })
   }
   createanAlyser() {
-    this._analyser = this._audioCtx.createAnalyser()
+    this._analyserNode = this._audioCtx.createAnalyser()
     // default 2048
-    this._analyser.fftSize = 2048
-    this._source.connect(this._analyser)
+    this._analyserNode.fftSize = 2048
+
+    this._source.connect(this._analyserNode)
 
     // fftSize / 2
-    this._bufferLength = this._analyser.frequencyBinCount
-    this._dataArray = new Uint8Array(this._bufferLength)
-    console.log(this._dataArray)
+    this._bufferLength = this._analyserNode.frequencyBinCount
+    this._spectrum = new Uint8Array(this._bufferLength)
+    this._timeDomainArray = new Uint8Array(this._bufferLength)
+    this.getByteTimeDomainData()
+    console.log(this._timeDomainArray)
   }
   start() {
     this._source.start(0)
@@ -36,8 +40,12 @@ export default class {
     this._source.stop()
   }
   setFrequency() {
-    this._analyser.getByteFrequencyData(this._dataArray)
+    this._analyserNode.getByteFrequencyData(this._spectrum)
   }
+  getByteTimeDomainData() {
+    this._analyserNode.getByteTimeDomainData(this._timeDomainArray)
+  }
+
   // get dataArray() {
   //   return this.dataArray
   // }

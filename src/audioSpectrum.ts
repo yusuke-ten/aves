@@ -1,6 +1,6 @@
 export default class {
   private _audioCtx: AudioContext
-  private _source: AudioBufferSourceNode
+  public _source: AudioBufferSourceNode
   public _analyser: AnalyserNode
   public _bufferLength: number
   public _dataArray: Uint8Array
@@ -18,13 +18,16 @@ export default class {
 
     this._dataArray = new Uint8Array(this._bufferLength)
   }
-  decodeAudio(audioData: ArrayBuffer) {
+  decodeAudio(audioData: ArrayBuffer):Promise<void> {
     return this._audioCtx.decodeAudioData(audioData).then(buffer => {
       this._source.buffer = buffer
     })
   }
   start() {
     this._source.start(0)
+  }
+  stop() {
+    this._source.stop()
   }
   setFrequency() {
     this._analyser.getByteFrequencyData(this._dataArray)

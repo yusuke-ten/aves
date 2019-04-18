@@ -5,14 +5,21 @@ export default class {
   private _canvasHeight: number = 500
   private _canvasElm: HTMLCanvasElement
   private _canvasCtx: CanvasRenderingContext2D
+  private _animationFrameId: number
 
   constructor() {
     this._canvasElm = document.querySelector('#canvas')
+
     this._canvasCtx = this._canvasElm.getContext('2d')
+    this._canvasCtx.fillStyle = 'rgb(0, 0, 0)'
     this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight)
+    this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
+    this._canvasCtx.fillStyle = 'rgb(0,255,255)'
+    this._canvasCtx.fillRect(0, 0, 100, 100)
   }
   draw(spectrum: audioSpectrum) {
-    let drawVisual = requestAnimationFrame(() => this.draw(spectrum))
+    this._animationFrameId = requestAnimationFrame(() => this.draw(spectrum))
+    console.log(this._canvasCtx)
 
     spectrum.setFrequency()
 
@@ -23,19 +30,11 @@ export default class {
 
     let barHeight: number
     var x = 0
-    let barHeightArray = []
 
     for (var i = 0; i < spectrum._bufferLength; i++) {
       barHeight = spectrum._dataArray[i]
-      barHeightArray.push(barHeight)
 
       this._canvasCtx.fillStyle = 'rgb(0,50,50)'
-      console.log({
-        x: x,
-        y: this._canvasHeight - barHeight / 2,
-        z: barWidth,
-        a: barHeight / 2
-      })
 
       this._canvasCtx.fillRect(
         x,
@@ -46,6 +45,8 @@ export default class {
 
       x += barWidth + 1
     }
-    console.log(barHeightArray)
+  }
+  stop() {
+    cancelAnimationFrame(this._animationFrameId)
   }
 }

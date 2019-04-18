@@ -4,27 +4,37 @@ import audioSpectrum from './audioSpectrum'
 export default class {
   private _canvas: spectrumCanvas
   private _analyzer: audioSpectrum
-  constructor(audioData: ArrayBuffer) {
-    console.log(audioData)
+  constructor() {
+    this._analyzer = new audioSpectrum()
     this._canvas = new spectrumCanvas()
-    this.init(audioData)
   }
 
-  init(audioData: ArrayBuffer) {
-    this._analyzer = new audioSpectrum()
-    this._analyzer.decodeAudio(audioData).then(() => {
-      console.log('decodeAudio');
-      
-      this._analyzer.start()
-      this._canvas.draw(this._analyzer)
-    })
+  async loadAudio(audioData: ArrayBuffer): Promise<void> {
+    try {
+      await this._analyzer.decodeAudio(audioData)
+      console.log('decodeAudio')
+      // this._analyzer.start()
+      // this._canvas.draw(this._analyzer)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      return
+    }
+  }
+  start() {
+    this._analyzer.start()
+    this._canvas.draw(this._analyzer)
+  }
+  stop() {
+    this._analyzer.stop()
+    this._canvas.stop()
   }
 }
 // import AnalyzerNode from './audioSpectrum'
 
 // function init() {
-//   
-//   
+//
+//
 //   const elm = document.querySelector('#start')
 //   elm.addEventListener('click', function() {
 //     var request = new XMLHttpRequest()
@@ -39,9 +49,9 @@ export default class {
 //     }
 //     request.send()
 //   })
-//   
+//
 //   function audioLoad(audioData: ArrayBuffer) {
-//     
+//
 //   }
 // }
 

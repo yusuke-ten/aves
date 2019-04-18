@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["SpectrumAnalyzer"] = factory();
+		exports["Spectrumanalyser"] = factory();
 	else
-		root["SpectrumAnalyzer"] = factory();
+		root["Spectrumanalyser"] = factory();
 })(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -96,10 +96,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/audioSpectrum.ts":
-/*!******************************!*\
-  !*** ./src/audioSpectrum.ts ***!
-  \******************************/
+/***/ "./src/audio.ts":
+/*!**********************!*\
+  !*** ./src/audio.ts ***!
+  \**********************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -141,6 +141,59 @@ var default_1 = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/canvas.ts":
+/*!***********************!*\
+  !*** ./src/canvas.ts ***!
+  \***********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var default_1 = /** @class */ (function () {
+    function default_1() {
+        this._canvasWidth = 1000;
+        this._canvasHeight = 400;
+        this._canvasElm = document.querySelector('#canvas');
+        this._canvasElm.width = this._canvasWidth;
+        this._canvasElm.height = this._canvasHeight;
+        this._canvasCtx = this._canvasElm.getContext('2d');
+        this._canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
+        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
+        this._canvasCtx.strokeStyle = 'white';
+        this._canvasCtx.strokeText('青色でstrokText', 10, 25);
+    }
+    default_1.prototype.draw = function (spectrum) {
+        console.log('draw');
+        spectrum.setFrequency();
+        this._canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
+        var barWidth = (this._canvasWidth / spectrum._bufferLength) * 2.5;
+        var barHeight;
+        var x = 0;
+        for (var i = 0; i < spectrum._bufferLength; i++) {
+            barHeight = spectrum._dataArray[i];
+            this._canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
+            this._canvasCtx.fillRect(x, this._canvasHeight - barHeight / 2, barWidth, barHeight / 2);
+            x += barWidth + 1;
+        }
+    };
+    default_1.prototype.animationStart = function (spectrum) {
+        var _this = this;
+        this._animationFrameId = requestAnimationFrame(function () { return _this.animationStart(spectrum); });
+        this.draw(spectrum);
+    };
+    default_1.prototype.animationStop = function () {
+        cancelAnimationFrame(this._animationFrameId);
+    };
+    return default_1;
+}());
+/* harmony default export */ __webpack_exports__["default"] = (default_1);
+
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
@@ -150,8 +203,8 @@ var default_1 = /** @class */ (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _spectrumCanvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./spectrumCanvas */ "./src/spectrumCanvas.ts");
-/* harmony import */ var _audioSpectrum__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./audioSpectrum */ "./src/audioSpectrum.ts");
+/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./canvas */ "./src/canvas.ts");
+/* harmony import */ var _audio__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./audio */ "./src/audio.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -191,8 +244,8 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 var default_1 = /** @class */ (function () {
     function default_1() {
-        this._canvas = new _spectrumCanvas__WEBPACK_IMPORTED_MODULE_0__["default"]();
-        this._analyzer = new _audioSpectrum__WEBPACK_IMPORTED_MODULE_1__["default"]();
+        this._analyser = new _audio__WEBPACK_IMPORTED_MODULE_1__["default"]();
+        this._canvas = new _canvas__WEBPACK_IMPORTED_MODULE_0__["default"]();
     }
     default_1.prototype.loadAudio = function (audioData) {
         return __awaiter(this, void 0, void 0, function () {
@@ -201,7 +254,7 @@ var default_1 = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, 3, 4]);
-                        return [4 /*yield*/, this._analyzer.decodeAudio(audioData)];
+                        return [4 /*yield*/, this._analyser.decodeAudio(audioData)];
                     case 1:
                         _a.sent();
                         console.log('decodeAudio');
@@ -217,84 +270,12 @@ var default_1 = /** @class */ (function () {
         });
     };
     default_1.prototype.start = function () {
-        this._analyzer.start();
-        this._canvas.draw(this._analyzer);
+        this._analyser.start();
+        this._canvas.animationStart(this._analyser);
     };
     default_1.prototype.stop = function () {
-        this._analyzer.stop();
-        this._canvas.stop();
-    };
-    return default_1;
-}());
-/* harmony default export */ __webpack_exports__["default"] = (default_1);
-// import AnalyzerNode from './audioSpectrum'
-// function init() {
-//
-//
-//   const elm = document.querySelector('#start')
-//   elm.addEventListener('click', function() {
-//     var request = new XMLHttpRequest()
-//     const url = 'sample.mp3'
-//     request.open('GET', url, true)
-//     request.responseType = 'arraybuffer'
-//     // Decode asynchronously
-//     request.onload = function() {
-//       const audioData: ArrayBuffer = request.response
-//       audioLoad(audioData)
-//     }
-//     request.send()
-//   })
-//
-//   function audioLoad(audioData: ArrayBuffer) {
-//
-//   }
-// }
-// window.onload = init
-
-
-/***/ }),
-
-/***/ "./src/spectrumCanvas.ts":
-/*!*******************************!*\
-  !*** ./src/spectrumCanvas.ts ***!
-  \*******************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-var default_1 = /** @class */ (function () {
-    function default_1() {
-        this._canvasWidth = 500;
-        this._canvasHeight = 500;
-        this._canvasElm = document.querySelector('#canvas');
-        this._canvasCtx = this._canvasElm.getContext('2d');
-        this._canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
-        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
-    }
-    default_1.prototype.draw = function (spectrum) {
-        var _this = this;
-        this._animationFrameId = requestAnimationFrame(function () { return _this.draw(spectrum); });
-        console.log(this._canvasCtx);
-        spectrum.setFrequency();
-        this._canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
-        var barWidth = (this._canvasWidth / spectrum._bufferLength) * 2.5;
-        var barHeight;
-        var x = 0;
-        var barHeightArray = [];
-        for (var i = 0; i < spectrum._bufferLength; i++) {
-            barHeight = spectrum._dataArray[i];
-            barHeightArray.push(barHeight);
-            this._canvasCtx.fillStyle = 'rgb(0,50,50)';
-            this._canvasCtx.fillRect(x, this._canvasHeight - barHeight / 2, barWidth, barHeight / 2);
-            x += barWidth + 1;
-        }
-        console.log(barHeightArray);
-    };
-    default_1.prototype.stop = function () {
-        cancelAnimationFrame(this._animationFrameId);
+        this._analyser.stop();
+        this._canvas.animationStop();
     };
     return default_1;
 }());

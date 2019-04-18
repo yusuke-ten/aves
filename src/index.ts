@@ -1,58 +1,30 @@
-import spectrumCanvas from './spectrumCanvas'
-import audioSpectrum from './audioSpectrum'
+import canvas from './canvas'
+import audio from './audio'
 
 export default class {
-  private _canvas: spectrumCanvas
-  private _analyzer: audioSpectrum
+  private _canvas: canvas
+  private _audio: audio
   constructor() {
-    this._analyzer = new audioSpectrum()
-    this._canvas = new spectrumCanvas()
+    this._audio = new audio()
+    this._canvas = new canvas()
   }
 
-  async loadAudio(audioData: ArrayBuffer): Promise<void> {
+  async loadAudio(audioData: ArrayBuffer): Promise<AudioBufferSourceNode> {
     try {
-      await this._analyzer.decodeAudio(audioData)
-      console.log('decodeAudio')
-      // this._analyzer.start()
-      // this._canvas.draw(this._analyzer)
+      return await this._audio.decodeAudio(audioData)
     } catch (error) {
       console.log(error)
-    } finally {
-      return
     }
   }
   start() {
-    this._analyzer.start()
-    this._canvas.draw(this._analyzer)
+    this._audio.start()
+    this._canvas.animationStart(this._audio)
   }
   stop() {
-    this._analyzer.stop()
-    this._canvas.stop()
+    this._audio.stop()
+    this._canvas.animationStop()
+  }
+  analyser() {
+    this._audio.createanAlyser()
   }
 }
-// import AnalyzerNode from './audioSpectrum'
-
-// function init() {
-//
-//
-//   const elm = document.querySelector('#start')
-//   elm.addEventListener('click', function() {
-//     var request = new XMLHttpRequest()
-//     const url = 'sample.mp3'
-//     request.open('GET', url, true)
-//     request.responseType = 'arraybuffer'
-
-//     // Decode asynchronously
-//     request.onload = function() {
-//       const audioData: ArrayBuffer = request.response
-//       audioLoad(audioData)
-//     }
-//     request.send()
-//   })
-//
-//   function audioLoad(audioData: ArrayBuffer) {
-//
-//   }
-// }
-
-// window.onload = init

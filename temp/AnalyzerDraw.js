@@ -3,7 +3,7 @@ export default class {
     window.AudioContext = window.AudioContext || window.webkitAudioContext
     this.audioCtx = new AudioContext()
     this.source = this.audioCtx.createBufferSource()
-    this.analyser = this.audioCtx.createAnalyser()
+    this.analyser = this.audioCtx.createanalyser()
 
     this.audioCtx.decodeAudioData(audioData).then(buffer => {
       // デコードしたデータをここで使う

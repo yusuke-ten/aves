@@ -9,30 +9,31 @@
     <script src="index.js"></script>
     <script>
       window.onload = function() {
-        let sa
+        let aves
         const load = document.querySelector('#load')
         const start = document.querySelector('#start')
         const stop = document.querySelector('#stop')
         load.addEventListener('click', function() {
           var request = new XMLHttpRequest()
-          const url = 'sample.mp3'
+          const url = 'skrillex.mp3'
           request.open('GET', url, true)
           request.responseType = 'arraybuffer'
 
           // Decode asynchronously
           request.onload = function() {
             const audioData = request.response
-            sa = new SpectrumAnalyzer()
-            sa.loadAudio(audioData)
+            aves = new Aves()
+            aves.loadAudio(audioData)
+            aves.analyser()
           }
           request.send()
         })
 
         start.addEventListener('click', function() {
-          sa.start()
+          aves.start()
         })
         stop.addEventListener('click', function() {
-          sa.stop()
+          aves.stop()
         })
       }
     </script>

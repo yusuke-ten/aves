@@ -6,7 +6,7 @@ module.exports = {
   // ファイルの出力設定
   output: {
     //  出力ファイルのディレクトリ名
-    library: 'SpectrumAnalyzer',
+    library: 'Spectrumanalyser',
     libraryExport: 'default',
     libraryTarget: 'umd',
     path: `${__dirname}/dist`,

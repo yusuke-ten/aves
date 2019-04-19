@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["Spectrumanalyser"] = factory();
+		exports["Aves"] = factory();
 	else
-		root["Spectrumanalyser"] = factory();
+		root["Aves"] = factory();
 })(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -122,14 +122,13 @@ var default_1 = /** @class */ (function () {
         });
     };
     default_1.prototype.createanAlyser = function () {
-        this._analyser = this._audioCtx.createAnalyser();
+        this._analyserNode = this._audioCtx.createAnalyser();
         // default 2048
-        this._analyser.fftSize = 2048;
-        this._analyser.maxDecibels = 255;
-        this._source.connect(this._analyser);
+        this._analyserNode.fftSize = 2048;
+        this._source.connect(this._analyserNode);
         // fftSize / 2
-        this._bufferLength = this._analyser.frequencyBinCount;
-        this._dataArray = new Uint8Array(this._bufferLength);
+        this._bufferLength = this._analyserNode.frequencyBinCount;
+        this._spectrum = new Uint8Array(this._bufferLength);
         this._timeDomainArray = new Uint8Array(this._bufferLength);
         this.getByteTimeDomainData();
         console.log(this._timeDomainArray);
@@ -141,10 +140,10 @@ var default_1 = /** @class */ (function () {
         this._source.stop();
     };
     default_1.prototype.setFrequency = function () {
-        this._analyser.getByteFrequencyData(this._dataArray);
+        this._analyserNode.getByteFrequencyData(this._spectrum);
     };
     default_1.prototype.getByteTimeDomainData = function () {
-        this._analyser.getByteTimeDomainData(this._timeDomainArray);
+        this._analyserNode.getByteTimeDomainData(this._timeDomainArray);
     };
     return default_1;
 }());
@@ -182,11 +181,15 @@ var default_1 = /** @class */ (function () {
         var x = 0;
         var barHeightArray = [];
         for (var i = 0; i < spectrum._bufferLength; i++) {
-            var barHeight = spectrum._dataArray[i];
-            // (spectrum._dataArray[i] / 255) * this._canvasHeight
+            var barHeight = spectrum._spectrum[i];
+            // let barHeight: number = -(
+            //   (1 - spectrum._spectrum[i] / 255) *
+            //   this._canvasHeight
+            // )
+            //
             barHeightArray.push(barHeight);
             this._canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
-            this._canvasCtx.fillRect(x, this._canvasHeight - barHeight / 2, barWidth, barHeight / 2);
+            this._canvasCtx.fillRect(x, this._canvasHeight - barHeight, barWidth, barHeight);
             x += barWidth + 1;
         }
         console.log(barHeightArray);

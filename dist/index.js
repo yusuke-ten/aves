@@ -109,6 +109,8 @@ var default_1 = /** @class */ (function () {
     // private
     function default_1() {
         this._audioCtx = new AudioContext();
+        this._sampleRate = this._audioCtx.sampleRate;
+        console.log(this._sampleRate);
         this._source = this._audioCtx.createBufferSource();
         this._source.connect(this._audioCtx.destination);
     }
@@ -125,6 +127,10 @@ var default_1 = /** @class */ (function () {
         this._analyserNode = this._audioCtx.createAnalyser();
         // default 2048
         this._analyserNode.fftSize = 2048;
+        this._fsDivN = this._sampleRate / this._analyserNode.fftSize;
+        console.log(this._fsDivN);
+        this._n500Hz = Math.floor(500 / this._fsDivN);
+        console.log(this._n500Hz);
         this._source.connect(this._analyserNode);
         // fftSize / 2
         this._bufferLength = this._analyserNode.frequencyBinCount;
@@ -163,8 +169,8 @@ var default_1 = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 var default_1 = /** @class */ (function () {
     function default_1() {
-        this._canvasWidth = 600;
-        this._canvasHeight = 255;
+        this._canvasWidth = 1000;
+        this._canvasHeight = 500;
         this._bgColor = 'rgb(70, 70, 70)';
         this._canvasElm = document.querySelector('#canvas');
         this._canvasElm.width = this._canvasWidth;
@@ -177,22 +183,17 @@ var default_1 = /** @class */ (function () {
         this._canvasCtx.strokeText('青色でstrokText', 10, 25);
     }
     default_1.prototype.drawAnalyser = function (spectrum) {
-        var barWidth = (this._canvasWidth / spectrum._bufferLength) * 2.5;
+        var barWidth = this._canvasWidth / spectrum._bufferLength;
         var x = 0;
         var barHeightArray = [];
         for (var i = 0; i < spectrum._bufferLength; i++) {
-            var barHeight = spectrum._spectrum[i];
-            // let barHeight: number = -(
-            //   (1 - spectrum._spectrum[i] / 255) *
-            //   this._canvasHeight
-            // )
-            //
+            // let barHeight: number = spectrum._spectrum[i]
+            var barHeight = (spectrum._spectrum[i] / 255) * this._canvasHeight;
             barHeightArray.push(barHeight);
             this._canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
             this._canvasCtx.fillRect(x, this._canvasHeight - barHeight, barWidth, barHeight);
-            x += barWidth + 1;
+            x += barWidth;
         }
-        console.log(barHeightArray);
     };
     default_1.prototype.animationStart = function (spectrum) {
         var _this = this;
@@ -202,6 +203,31 @@ var default_1 = /** @class */ (function () {
         this._canvasCtx.fillStyle = this._bgColor;
         this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
         spectrum.setFrequency();
+        var barWidth = this._canvasWidth / spectrum._bufferLength;
+        var x = 0;
+        for (var i_1 = 0; i_1 < spectrum._bufferLength; i_1++) {
+            var f = Math.floor(i_1 * spectrum._fsDivN); // index -> frequency
+            // 500 Hz ?
+            if (i_1 % spectrum._n500Hz === 0) {
+                var f = Math.floor(500 * (i_1 / spectrum._n500Hz)); // index -> frequency
+                var text = f < 1000 ? f + ' Hz' : f / 1000 + ' kHz';
+                // Draw grid (X)
+                this._canvasCtx.fillStyle = "rgb(50,255,50)";
+                this._canvasCtx.fillRect(x, 0, 1, this._canvasHeight);
+                // Draw text (X)
+                this._canvasCtx.fillText(text, x, this._canvasHeight);
+            }
+            x += this._canvasWidth / spectrum._bufferLength;
+        }
+        var textYs = ['1.00', '0.50', '0.00'];
+        for (var i = 0, len = textYs.length; i < len; i++) {
+            var text = textYs[i];
+            var gy = (1 - parseFloat(text)) * this._canvasHeight;
+            // Draw grid (Y)
+            this._canvasCtx.fillRect(0, gy, this._canvasWidth, 1);
+            // Draw text (Y)
+            this._canvasCtx.fillText(text, 0, gy);
+        }
         this.drawAnalyser(spectrum);
     };
     default_1.prototype.animationStop = function () {

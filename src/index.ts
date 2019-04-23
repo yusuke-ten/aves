@@ -1,12 +1,12 @@
-import AvesDrawer from './canvas'
-import Aves from './aves'
+import AvesDrawer from './drawer/index'
+import Aves from './core/aves'
 
 export default class {
-  private _canvas: AvesDrawer
+  public avesDrawer: AvesDrawer
   public aves: Aves
   constructor() {
     this.aves = new Aves()
-    this._canvas = new AvesDrawer()
+    this.avesDrawer = new AvesDrawer()
   }
 
   async loadAudio(audioData: ArrayBuffer): Promise<AudioBufferSourceNode> {
@@ -18,11 +18,11 @@ export default class {
   }
   start() {
     this.aves.start()
-    this._canvas.animationStart(this.aves)
+    this.avesDrawer.animationStart(this.aves)
   }
   stop() {
     this.aves.stop()
-    this._canvas.animationStop()
+    this.avesDrawer.animationStop()
   }
   analyser() {
     this.aves.createanAlyser()

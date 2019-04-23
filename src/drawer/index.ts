@@ -1,4 +1,4 @@
-import audio from './aves'
+import audio from '../core/aves'
 export default class {
   private _canvasWidth: number = 3000
   private _canvasHeight: number = 500

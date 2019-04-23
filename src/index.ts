@@ -1,4 +1,4 @@
-import Aves from './aves/aves'
+import Aves from './aves/core'
 import AvesAnalyser from './aves/analyser'
 import DrawAnalyser from './drawer/analyser'
 
@@ -27,7 +27,7 @@ export default class {
 
   stop() {
     this.aves.stop()
-    // this.avesDrawer.animationStop()
+    this.drawAnalyser.animationStop()
   }
 
   createAnalyser(

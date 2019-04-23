@@ -1,4 +1,4 @@
-import Aves from './aves'
+import Aves from './core'
 export default class {
   public analyserNode: AnalyserNode
   public freqDivBufferLength: number

@@ -12,15 +12,12 @@ export default class {
     canvasWidth: number,
     canvasHeihgt: number
   ) {
-    console.log('construct');
-    console.log(elm);
-    
     this._canvasElm = elm
-    this._canvasElm.width = 3000
-    // this._canvasElm.width = canvasWidth
-    this._canvasElm.height = 500
-    // this._canvasElm.height = canvasHeihgt
+    this._canvasElm.width = canvasWidth
+    this._canvasElm.height = canvasHeihgt
+
     this._canvasCtx = this._canvasElm.getContext('2d')
+
     this._canvasCtx.fillStyle = this._bgColor
     this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight)
     this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)

@@ -147,9 +147,9 @@ var default_1 = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/aves/aves.ts":
+/***/ "./src/aves/core.ts":
 /*!**************************!*\
-  !*** ./src/aves/aves.ts ***!
+  !*** ./src/aves/core.ts ***!
   \**************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -198,19 +198,24 @@ __webpack_require__.r(__webpack_exports__);
 var default_1 = /** @class */ (function () {
     function default_1(elm, canvasWidth, canvasHeihgt) {
         this._bgColor = 'rgb(70, 70, 70)';
-        console.log('construct');
-        console.log(elm);
-        this._canvasElm = elm;
-        this._canvasElm.width = 3000;
-        // this._canvasElm.width = canvasWidth
-        this._canvasElm.height = 500;
-        // this._canvasElm.height = canvasHeihgt
-        this._canvasCtx = this._canvasElm.getContext('2d');
-        this._canvasCtx.fillStyle = this._bgColor;
-        this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
-        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
-        this._canvasCtx.strokeStyle = 'white';
-        this._canvasCtx.strokeText('青色でstrokText', 10, 25);
+        try {
+            console.log('construct');
+            console.log(elm);
+            this._canvasElm = elm;
+            this._canvasElm.width = canvasWidth;
+            this._canvasElm.height = canvasHeihgt;
+            this._canvasCtx = this._canvasElm.getContext('2d');
+            this._canvasCtx.fillStyle = this._bgColor;
+            this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
+            this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
+            this._canvasCtx.strokeStyle = 'white';
+            this._canvasCtx.strokeText('青色でstrokText', 10, 25);
+            console.log('construct end');
+            console.log(this._canvasCtx);
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
     default_1.prototype.drawAnalyser = function (avesAnalyser) {
         var barWidth = this._canvasWidth / avesAnalyser._maxHzIndex;
@@ -284,7 +289,7 @@ var default_1 = /** @class */ (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _aves_aves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./aves/aves */ "./src/aves/aves.ts");
+/* harmony import */ var _aves_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./aves/core */ "./src/aves/core.ts");
 /* harmony import */ var _aves_analyser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./aves/analyser */ "./src/aves/analyser.ts");
 /* harmony import */ var _drawer_analyser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./drawer/analyser */ "./src/drawer/analyser.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -327,7 +332,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 var default_1 = /** @class */ (function () {
     function default_1() {
-        this.aves = new _aves_aves__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        this.aves = new _aves_core__WEBPACK_IMPORTED_MODULE_0__["default"]();
     }
     default_1.prototype.loadAudio = function (audioData) {
         return __awaiter(this, void 0, void 0, function () {

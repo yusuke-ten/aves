@@ -24,7 +24,7 @@
             const audioData = request.response
             aves = new Aves()
             aves.loadAudio(audioData)
-            aves.createAnalyser(document.querySelector('#canvas'), 500, 500)
+            aves.createAnalyser(document.querySelector('#canvas'), 1500, 500)
           }
           request.send()
         })

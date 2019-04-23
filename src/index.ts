@@ -1,6 +1,6 @@
-import Aves from './aves/core'
-import AvesAnalyser from './aves/analyser'
-import DrawAnalyser from './drawer/analyser'
+import Aves from './aves/Aves'
+import AvesAnalyser from './aves/AvesAnalyser'
+import DrawAnalyser from './drawer/DrawAnalyser'
 
 export default class {
   // Class member
@@ -32,10 +32,10 @@ export default class {
 
   createAnalyser(
     elm: HTMLCanvasElement,
-    canvasWidth: number,
-    canvasHeihgt: number
+    canvasHeihgt: number,
+    canvasWidth: number
   ) {
     this.avesAnalyser = new AvesAnalyser(this.aves)
-    this.drawAnalyser = new DrawAnalyser(elm, canvasWidth, canvasHeihgt)
+    this.drawAnalyser = new DrawAnalyser(elm, canvasHeihgt, canvasWidth)
   }
 }

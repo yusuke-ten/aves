@@ -199,10 +199,12 @@ var default_1 = /** @class */ (function () {
     function default_1(elm, canvasWidth, canvasHeihgt) {
         this._bgColor = 'rgb(70, 70, 70)';
         console.log('construct');
-        console.log(canvasWidth);
+        console.log(elm);
         this._canvasElm = elm;
-        this._canvasElm.width = canvasWidth;
-        this._canvasElm.height = canvasHeihgt;
+        this._canvasElm.width = 3000;
+        // this._canvasElm.width = canvasWidth
+        this._canvasElm.height = 500;
+        // this._canvasElm.height = canvasHeihgt
         this._canvasCtx = this._canvasElm.getContext('2d');
         this._canvasCtx.fillStyle = this._bgColor;
         this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);

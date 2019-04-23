@@ -1,16 +1,25 @@
-import audio from '../core/aves'
+import AvesAnalyser from '../aves/analyser'
 export default class {
-  private _canvasWidth: number 
-  private _canvasHeight: number 
+  private _canvasWidth: number
+  private _canvasHeight: number
   private _canvasElm: HTMLCanvasElement
   private _canvasCtx: CanvasRenderingContext2D
   private _animationFrameId: number
   private _bgColor: string = 'rgb(70, 70, 70)'
 
-  constructor(elm: HTMLCanvasElement, canvasWidth: number, canvasHeihgt: number) {
+  constructor(
+    elm: HTMLCanvasElement,
+    canvasWidth: number,
+    canvasHeihgt: number
+  ) {
+    console.log('construct');
+    console.log(elm);
+    
     this._canvasElm = elm
-    this._canvasElm.width = canvasWidth
-    this._canvasElm.height = canvasHeihgt
+    this._canvasElm.width = 3000
+    // this._canvasElm.width = canvasWidth
+    this._canvasElm.height = 500
+    // this._canvasElm.height = canvasHeihgt
     this._canvasCtx = this._canvasElm.getContext('2d')
     this._canvasCtx.fillStyle = this._bgColor
     this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight)
@@ -18,18 +27,19 @@ export default class {
     this._canvasCtx.strokeStyle = 'white'
     this._canvasCtx.strokeText('青色でstrokText', 10, 25)
   }
-  drawAnalyser(spectrum: audio) {
-    const barWidth: number = this._canvasWidth / spectrum._maxHzIndex
-    // const hz = spectrum._sampleRate / spectrum._analyserNode.fftSize
-    
+
+  drawAnalyser(avesAnalyser: AvesAnalyser) {
+    const barWidth: number = this._canvasWidth / avesAnalyser._maxHzIndex
+    // const hz = avesAnalyser._sampleRate / avesAnalyser._analyserNode.fftSize
 
     let x: number = 0
     const barHeightArray = []
 
-    for (let i: number = 0; i < spectrum._bufferLength; i++) {
-      if (i > spectrum._maxHzIndex) break
-      // let barHeight: number = spectrum._spectrum[i]
-      let barHeight: number = (spectrum._unit8Array[i] / 255) * this._canvasHeight
+    for (let i: number = 0; i < avesAnalyser._bufferLength; i++) {
+      if (i > avesAnalyser._maxHzIndex) break
+      // let barHeight: number = avesAnalyser._avesAnalyser[i]
+      let barHeight: number =
+        (avesAnalyser._unit8Array[i] / 255) * this._canvasHeight
 
       barHeightArray.push(barHeight)
 
@@ -45,23 +55,24 @@ export default class {
       x += barWidth
     }
   }
-  animationStart(spectrum: audio) {
+
+  animationStart(avesAnalyser: AvesAnalyser) {
     this._animationFrameId = requestAnimationFrame(() =>
-      this.animationStart(spectrum)
+      this.animationStart(avesAnalyser)
     )
     this._canvasCtx.fillStyle = this._bgColor
     this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
-    spectrum.getByteFrequencyData()
-    const barWidth: number = this._canvasWidth / spectrum._bufferLength
+    avesAnalyser.getByteFrequencyData()
+    const barWidth: number = this._canvasWidth / avesAnalyser._bufferLength
 
     let x: number = 0
-    for (let i: number = 0; i < spectrum._bufferLength; i++) {
-      var f = Math.floor(i * spectrum._freqDivBufferLength) // index -> frequency
+    for (let i: number = 0; i < avesAnalyser._bufferLength; i++) {
+      var f = Math.floor(i * avesAnalyser.freqDivBufferLength) // index -> frequency
 
       // 500 Hz ?
-      if (i % spectrum._n500Hz === 0) {
-        if (i > spectrum._maxHzIndex) break
-        var f = Math.floor(500 * (i / spectrum._n500Hz)) // index -> frequency
+      if (i % avesAnalyser._n500Hz === 0) {
+        if (i > avesAnalyser._maxHzIndex) break
+        var f = Math.floor(500 * (i / avesAnalyser._n500Hz)) // index -> frequency
 
         var text = f < 1000 ? f + ' Hz' : f / 1000 + ' kHz'
         // Draw grid (X)
@@ -70,7 +81,7 @@ export default class {
         // Draw text (X)
         this._canvasCtx.fillText(text, x, this._canvasHeight)
       }
-      x += this._canvasWidth / spectrum._maxHzIndex
+      x += this._canvasWidth / avesAnalyser._maxHzIndex
     }
     var textYs = ['1.00', '0.50', '0.00']
     for (var i = 0, len = textYs.length; i < len; i++) {
@@ -81,8 +92,9 @@ export default class {
       // Draw text (Y)
       this._canvasCtx.fillText(text, 0, gy)
     }
-    this.drawAnalyser(spectrum)
+    this.drawAnalyser(avesAnalyser)
   }
+
   animationStop() {
     cancelAnimationFrame(this._animationFrameId)
   }

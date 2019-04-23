@@ -96,10 +96,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/audio.ts":
-/*!**********************!*\
-  !*** ./src/audio.ts ***!
-  \**********************/
+/***/ "./src/aves/analyser.ts":
+/*!******************************!*\
+  !*** ./src/aves/analyser.ts ***!
+  \******************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -107,49 +107,38 @@ return /******/ (function(modules) { // webpackBootstrap
 __webpack_require__.r(__webpack_exports__);
 var default_1 = /** @class */ (function () {
     // private
-    function default_1() {
-        this._audioCtx = new AudioContext();
-        this._sampleRate = this._audioCtx.sampleRate;
-        console.log(this._sampleRate);
-        this._source = this._audioCtx.createBufferSource();
-        this._source.connect(this._audioCtx.destination);
-    }
-    default_1.prototype.decodeAudio = function (audioData) {
-        var _this = this;
-        return this._audioCtx
-            .decodeAudioData(audioData)
-            .then(function (buffer) {
-            _this._source.buffer = buffer;
-            return _this._source;
-        });
-    };
-    default_1.prototype.createanAlyser = function () {
-        this._analyserNode = this._audioCtx.createAnalyser();
+    function default_1(aves) {
+        this.analyserNode = aves.audioCtx.createAnalyser();
+        aves.source.connect(this.analyserNode);
         // default 2048
-        this._analyserNode.fftSize = 2048;
-        this._fsDivN = this._sampleRate / this._analyserNode.fftSize;
-        console.log(this._fsDivN);
-        this._n500Hz = Math.floor(500 / this._fsDivN);
-        console.log(this._n500Hz);
-        this._source.connect(this._analyserNode);
+        this.analyserNode.fftSize = 2048;
+        // Array[0] is the strength of frequencies from 0 to 23.4Hz.
+        // Array[1] is the strength of frequencies from 23.4Hz to 46.8Hz.
+        // Array[2] is the strength of frequencies from 46.8Hz to 70.2Hz.
+        // Array[3] is the strength of frequencies from 70.2Hz to 93.6Hz.
+        // ...
+        this.freqDivBufferLength = aves.sampleRate / this.analyserNode.fftSize;
+        console.log(aves.sampleRate);
+        this._n500Hz = Math.floor(500 / this.freqDivBufferLength);
+        this._maxHz = 16000;
+        this._maxHzIndex = Math.floor(this._maxHz / this.freqDivBufferLength);
+        console.log(this._maxHzIndex);
         // fftSize / 2
-        this._bufferLength = this._analyserNode.frequencyBinCount;
-        this._spectrum = new Uint8Array(this._bufferLength);
-        this._timeDomainArray = new Uint8Array(this._bufferLength);
-        this.getByteTimeDomainData();
-        console.log(this._timeDomainArray);
+        this._bufferLength = this.analyserNode.frequencyBinCount;
+        this._unit8Array = new Uint8Array(this._bufferLength);
+        this._float32Array = new Float32Array(this._bufferLength);
+    }
+    default_1.prototype.freqDivIndex = function (index) {
+        return index * this.freqDivBufferLength;
     };
-    default_1.prototype.start = function () {
-        this._source.start(0);
+    default_1.prototype.getByteFrequencyData = function () {
+        this.analyserNode.getByteFrequencyData(this._unit8Array);
     };
-    default_1.prototype.stop = function () {
-        this._source.stop();
-    };
-    default_1.prototype.setFrequency = function () {
-        this._analyserNode.getByteFrequencyData(this._spectrum);
+    default_1.prototype.getFloatFrequencyData = function () {
+        this.analyserNode.getFloatFrequencyData(this._float32Array);
     };
     default_1.prototype.getByteTimeDomainData = function () {
-        this._analyserNode.getByteTimeDomainData(this._timeDomainArray);
+        this.analyserNode.getByteTimeDomainData(this._timeDomainArray);
     };
     return default_1;
 }());
@@ -158,23 +147,62 @@ var default_1 = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/canvas.ts":
-/*!***********************!*\
-  !*** ./src/canvas.ts ***!
-  \***********************/
+/***/ "./src/aves/aves.ts":
+/*!**************************!*\
+  !*** ./src/aves/aves.ts ***!
+  \**************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 var default_1 = /** @class */ (function () {
+    // private
     function default_1() {
-        this._canvasWidth = 1000;
-        this._canvasHeight = 500;
+        this.audioCtx = new AudioContext();
+        this.sampleRate = this.audioCtx.sampleRate;
+        this.source = this.audioCtx.createBufferSource();
+        this.source.connect(this.audioCtx.destination);
+    }
+    default_1.prototype.decodeAudio = function (audioData) {
+        var _this = this;
+        return this.audioCtx
+            .decodeAudioData(audioData)
+            .then(function (buffer) {
+            _this.source.buffer = buffer;
+            return _this.source;
+        });
+    };
+    default_1.prototype.start = function () {
+        this.source.start(0);
+    };
+    default_1.prototype.stop = function () {
+        this.source.stop();
+    };
+    return default_1;
+}());
+/* harmony default export */ __webpack_exports__["default"] = (default_1);
+
+
+/***/ }),
+
+/***/ "./src/drawer/analyser.ts":
+/*!********************************!*\
+  !*** ./src/drawer/analyser.ts ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var default_1 = /** @class */ (function () {
+    function default_1(elm, canvasWidth, canvasHeihgt) {
         this._bgColor = 'rgb(70, 70, 70)';
-        this._canvasElm = document.querySelector('#canvas');
-        this._canvasElm.width = this._canvasWidth;
-        this._canvasElm.height = this._canvasHeight;
+        console.log('construct');
+        console.log(canvasWidth);
+        this._canvasElm = elm;
+        this._canvasElm.width = canvasWidth;
+        this._canvasElm.height = canvasHeihgt;
         this._canvasCtx = this._canvasElm.getContext('2d');
         this._canvasCtx.fillStyle = this._bgColor;
         this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
@@ -182,34 +210,39 @@ var default_1 = /** @class */ (function () {
         this._canvasCtx.strokeStyle = 'white';
         this._canvasCtx.strokeText('青色でstrokText', 10, 25);
     }
-    default_1.prototype.drawAnalyser = function (spectrum) {
-        var barWidth = this._canvasWidth / spectrum._bufferLength;
+    default_1.prototype.drawAnalyser = function (avesAnalyser) {
+        var barWidth = this._canvasWidth / avesAnalyser._maxHzIndex;
+        // const hz = avesAnalyser._sampleRate / avesAnalyser._analyserNode.fftSize
         var x = 0;
         var barHeightArray = [];
-        for (var i = 0; i < spectrum._bufferLength; i++) {
-            // let barHeight: number = spectrum._spectrum[i]
-            var barHeight = (spectrum._spectrum[i] / 255) * this._canvasHeight;
+        for (var i = 0; i < avesAnalyser._bufferLength; i++) {
+            if (i > avesAnalyser._maxHzIndex)
+                break;
+            // let barHeight: number = avesAnalyser._avesAnalyser[i]
+            var barHeight = (avesAnalyser._unit8Array[i] / 255) * this._canvasHeight;
             barHeightArray.push(barHeight);
             this._canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
             this._canvasCtx.fillRect(x, this._canvasHeight - barHeight, barWidth, barHeight);
             x += barWidth;
         }
     };
-    default_1.prototype.animationStart = function (spectrum) {
+    default_1.prototype.animationStart = function (avesAnalyser) {
         var _this = this;
         this._animationFrameId = requestAnimationFrame(function () {
-            return _this.animationStart(spectrum);
+            return _this.animationStart(avesAnalyser);
         });
         this._canvasCtx.fillStyle = this._bgColor;
         this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
-        spectrum.setFrequency();
-        var barWidth = this._canvasWidth / spectrum._bufferLength;
+        avesAnalyser.getByteFrequencyData();
+        var barWidth = this._canvasWidth / avesAnalyser._bufferLength;
         var x = 0;
-        for (var i_1 = 0; i_1 < spectrum._bufferLength; i_1++) {
-            var f = Math.floor(i_1 * spectrum._fsDivN); // index -> frequency
+        for (var i_1 = 0; i_1 < avesAnalyser._bufferLength; i_1++) {
+            var f = Math.floor(i_1 * avesAnalyser.freqDivBufferLength); // index -> frequency
             // 500 Hz ?
-            if (i_1 % spectrum._n500Hz === 0) {
-                var f = Math.floor(500 * (i_1 / spectrum._n500Hz)); // index -> frequency
+            if (i_1 % avesAnalyser._n500Hz === 0) {
+                if (i_1 > avesAnalyser._maxHzIndex)
+                    break;
+                var f = Math.floor(500 * (i_1 / avesAnalyser._n500Hz)); // index -> frequency
                 var text = f < 1000 ? f + ' Hz' : f / 1000 + ' kHz';
                 // Draw grid (X)
                 this._canvasCtx.fillStyle = "rgb(50,255,50)";
@@ -217,7 +250,7 @@ var default_1 = /** @class */ (function () {
                 // Draw text (X)
                 this._canvasCtx.fillText(text, x, this._canvasHeight);
             }
-            x += this._canvasWidth / spectrum._bufferLength;
+            x += this._canvasWidth / avesAnalyser._maxHzIndex;
         }
         var textYs = ['1.00', '0.50', '0.00'];
         for (var i = 0, len = textYs.length; i < len; i++) {
@@ -228,7 +261,7 @@ var default_1 = /** @class */ (function () {
             // Draw text (Y)
             this._canvasCtx.fillText(text, 0, gy);
         }
-        this.drawAnalyser(spectrum);
+        this.drawAnalyser(avesAnalyser);
     };
     default_1.prototype.animationStop = function () {
         cancelAnimationFrame(this._animationFrameId);
@@ -249,8 +282,9 @@ var default_1 = /** @class */ (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _canvas__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./canvas */ "./src/canvas.ts");
-/* harmony import */ var _audio__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./audio */ "./src/audio.ts");
+/* harmony import */ var _aves_aves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./aves/aves */ "./src/aves/aves.ts");
+/* harmony import */ var _aves_analyser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./aves/analyser */ "./src/aves/analyser.ts");
+/* harmony import */ var _drawer_analyser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./drawer/analyser */ "./src/drawer/analyser.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -288,10 +322,10 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 };
 
 
+
 var default_1 = /** @class */ (function () {
     function default_1() {
-        this._audio = new _audio__WEBPACK_IMPORTED_MODULE_1__["default"]();
-        this._canvas = new _canvas__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        this.aves = new _aves_aves__WEBPACK_IMPORTED_MODULE_0__["default"]();
     }
     default_1.prototype.loadAudio = function (audioData) {
         return __awaiter(this, void 0, void 0, function () {
@@ -300,7 +334,7 @@ var default_1 = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this._audio.decodeAudio(audioData)];
+                        return [4 /*yield*/, this.aves.decodeAudio(audioData)];
                     case 1: return [2 /*return*/, _a.sent()];
                     case 2:
                         error_1 = _a.sent();
@@ -312,15 +346,16 @@ var default_1 = /** @class */ (function () {
         });
     };
     default_1.prototype.start = function () {
-        this._audio.start();
-        this._canvas.animationStart(this._audio);
+        this.aves.start();
+        this.drawAnalyser.animationStart(this.avesAnalyser);
     };
     default_1.prototype.stop = function () {
-        this._audio.stop();
-        this._canvas.animationStop();
+        this.aves.stop();
+        // this.avesDrawer.animationStop()
     };
-    default_1.prototype.analyser = function () {
-        this._audio.createanAlyser();
+    default_1.prototype.createAnalyser = function (elm, canvasWidth, canvasHeihgt) {
+        this.avesAnalyser = new _aves_analyser__WEBPACK_IMPORTED_MODULE_1__["default"](this.aves);
+        this.drawAnalyser = new _drawer_analyser__WEBPACK_IMPORTED_MODULE_2__["default"](elm, canvasWidth, canvasHeihgt);
     };
     return default_1;
 }());

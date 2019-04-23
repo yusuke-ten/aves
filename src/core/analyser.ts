@@ -28,7 +28,7 @@ export default class {
         return this._source
       })
   }
-  createAnalyser() {
+  createanAlyser() {
     this._analyserNode = this._audioCtx.createAnalyser()
     // default 2048
     this._analyserNode.fftSize = 2048

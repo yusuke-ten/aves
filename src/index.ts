@@ -1,12 +1,14 @@
-import AvesDrawer from './drawer/index'
 import Aves from './core/aves'
+import AvesAnalyser from './core/analyser'
+import AnalyserDrawer from './drawer/analyser'
 
 export default class {
-  public avesDrawer: AvesDrawer
+
+  // Class member
   public aves: Aves
+
   constructor() {
     this.aves = new Aves()
-    this.avesDrawer = new AvesDrawer()
   }
 
   async loadAudio(audioData: ArrayBuffer): Promise<AudioBufferSourceNode> {
@@ -18,13 +20,14 @@ export default class {
   }
   start() {
     this.aves.start()
-    this.avesDrawer.animationStart(this.aves)
+    // this.avesDrawer.animationStart(this.aves)
   }
   stop() {
     this.aves.stop()
-    this.avesDrawer.animationStop()
+    // this.avesDrawer.animationStop()
   }
-  analyser() {
-    this.aves.createanAlyser()
+  createAnalyser(elm: HTMLCanvasElement, canvasWidth: number, canvasHeihgt: number) {
+    const avesAnalyser = new AvesAnalyser()
+    const analyserDrawer = new AnalyserDrawer(elm, canvasWidth, canvasHeihgt)
   }
 }

@@ -19,7 +19,7 @@ export default class {
     this._canvasCtx.strokeText('青色でstrokText', 10, 25)
   }
   drawAnalyser(spectrum: audio) {
-    const barWidth: number = this._canvasWidth / spectrum._bufferLength
+    const barWidth: number = this._canvasWidth / spectrum._maxHzIndex
     // const hz = spectrum._sampleRate / spectrum._analyserNode.fftSize
     
 
@@ -27,7 +27,7 @@ export default class {
     const barHeightArray = []
 
     for (let i: number = 0; i < spectrum._bufferLength; i++) {
-
+      if (i > spectrum._maxHzIndex) break
       // let barHeight: number = spectrum._spectrum[i]
       let barHeight: number = (spectrum._unit8Array[i] / 255) * this._canvasHeight
 
@@ -56,10 +56,11 @@ export default class {
 
     let x: number = 0
     for (let i: number = 0; i < spectrum._bufferLength; i++) {
-      var f = Math.floor(i * spectrum._fsDivN) // index -> frequency
+      var f = Math.floor(i * spectrum._freqDivBufferLength) // index -> frequency
 
       // 500 Hz ?
       if (i % spectrum._n500Hz === 0) {
+        if (i > spectrum._maxHzIndex) break
         var f = Math.floor(500 * (i / spectrum._n500Hz)) // index -> frequency
 
         var text = f < 1000 ? f + ' Hz' : f / 1000 + ' kHz'
@@ -69,7 +70,7 @@ export default class {
         // Draw text (X)
         this._canvasCtx.fillText(text, x, this._canvasHeight)
       }
-      x += this._canvasWidth / spectrum._bufferLength
+      x += this._canvasWidth / spectrum._maxHzIndex
     }
     var textYs = ['1.00', '0.50', '0.00']
     for (var i = 0, len = textYs.length; i < len; i++) {

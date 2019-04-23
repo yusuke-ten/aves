@@ -9,6 +9,8 @@ export default class {
   public _unit8Array: Uint8Array
   public _float32Array: Float32Array
   public _timeDomainArray: Uint8Array
+  public _maxHz: number
+  public _maxHzIndex: number
   // private
   constructor() {
     this._audioCtx = new AudioContext()
@@ -39,6 +41,10 @@ export default class {
     this._freqDivBufferLength = this._sampleRate / this._analyserNode.fftSize
 
     this._n500Hz = Math.floor(500 / this._freqDivBufferLength)
+    this._maxHz = 16000
+    this._maxHzIndex = Math.floor(this._maxHz / this._freqDivBufferLength)
+    console.log(this._maxHzIndex);
+    
 
     this._source.connect(this._analyserNode)
 

@@ -54,15 +54,31 @@ export default class {
     for (let i: number = 0; i < avesAnalyser.maxHzIndex; i++) {
       for (const hz of this._dispHz) {
         if (avesAnalyser.indexAtSpecificHz(hz) === i) {
+
+          // console.log(this._canvasWidth / (Math.LOG10E * Math.log(avesAnalyser.maxHzIndex)))
+
           const text: string = hz < 1000 ? String(hz) : String(hz / 1000)
           // Draw grid (X)
           this._canvasCtx.fillStyle = `rgb(50,255,50)`
-          this._canvasCtx.fillRect(x, 0, 1, this._canvasHeight)
+          this._canvasCtx.fillRect(
+            (this._canvasWidth / (Math.LOG10E * Math.log(avesAnalyser.maxHz))) *
+              (Math.LOG10E * Math.log(hz)),
+            0,
+            1,
+            this._canvasHeight
+          )
           // Draw text (X)
-          this._canvasCtx.fillText(text, x, this._canvasHeight)
+          this._canvasCtx.fillText(
+            text,
+            (this._canvasWidth / (Math.LOG10E * Math.log(avesAnalyser.maxHz))) *
+              (Math.LOG10E * Math.log(hz)),
+            this._canvasHeight
+          )
         }
       }
-      x += this._canvasWidth / avesAnalyser.maxHzIndex
+      x +=
+        this._canvasWidth /
+        (Math.LOG10E * Math.log(avesAnalyser.hzAtSpecificIndex(i)))
     }
   }
 

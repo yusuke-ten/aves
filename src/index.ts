@@ -32,10 +32,10 @@ export default class {
 
   createAnalyser(
     elm: HTMLCanvasElement,
-    canvasHeihgt: number,
-    canvasWidth: number
+    canvasWidth: number,
+    canvasHeihgt: number
   ) {
     this.avesAnalyser = new AvesAnalyser(this.aves)
-    this.drawAnalyser = new DrawAnalyser(elm, canvasHeihgt, canvasWidth)
+    this.drawAnalyser = new DrawAnalyser(elm, canvasWidth, canvasHeihgt)
   }
 }

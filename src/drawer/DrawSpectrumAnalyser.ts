@@ -128,16 +128,16 @@ export default class {
       // ─────────────────────────────────────────────────────────────────F
       // プロットする点を得る処理
       // ─────────────────────────────────────────────────────────────────
-      let barHeight: number =
+      let pointY: number =
         -1 *
-        ((avesAnalyser.float32Array[i] - avesAnalyser.maxDecibels) /
+        ((avesAnalyser.floatFrequencyArray[i] - avesAnalyser.maxDecibels) /
           avesAnalyser.range()) *
         this._canvasHeight
 
       if (i === avesAnalyser.minHzIndex) {
-        this._ctx.moveTo(0, barHeight)
+        this._ctx.moveTo(0, pointY)
       } else {
-        this._ctx.lineTo(pointX, barHeight)
+        this._ctx.lineTo(pointX, pointY)
       }
 
       // ─────────────────────────────────────────────────────────────────
@@ -167,7 +167,6 @@ export default class {
     this._ctx.fill()
 
     // グリッドとテキストを表示するために色とか諸々変更
-
     const fontSize = 11
     this._ctx.font = this.createFont(String(fontSize) + 'px')
     const gridSize = 0.6

@@ -1,17 +1,26 @@
 import Aves from './aves/Aves'
 import AvesAnalyser from './aves/AvesAnalyser'
-import DrawAnalyser from './drawer/DrawAnalyser'
+import DrawSpectrumAnalyser from './drawer/DrawSpectrumAnalyser'
+import DrawTimeDomainAnalyser from './drawer/DrawTimeDomainAnalyser'
 
 export default class {
   // Class member
   public aves: Aves
   public avesAnalyser: AvesAnalyser
-  public drawAnalyser: DrawAnalyser
+  public drawSpectrumAnalyser: DrawSpectrumAnalyser
+  public drawTimeDomainAnalyser: DrawTimeDomainAnalyser
 
   constructor() {
     this.aves = new Aves()
   }
 
+
+  /**
+   *
+   *
+   * @param {ArrayBuffer} audioData
+   * @returns {Promise<AudioBufferSourceNode>}
+   */
   async loadAudio(audioData: ArrayBuffer): Promise<AudioBufferSourceNode> {
     try {
       return await this.aves.decodeAudio(audioData)
@@ -20,22 +29,63 @@ export default class {
     }
   }
 
-  start() {
+  start(): void {
     this.aves.start()
-    this.drawAnalyser.animationStart(this.avesAnalyser)
+    if (this.drawSpectrumAnalyser instanceof DrawSpectrumAnalyser) {
+      this.drawSpectrumAnalyser.animationStart(this.avesAnalyser)
+    }
+    if (this.drawTimeDomainAnalyser instanceof DrawTimeDomainAnalyser) {
+      this.drawTimeDomainAnalyser.animationStart(this.avesAnalyser)
+    }
   }
 
-  stop() {
+  stop(): void {
     this.aves.stop()
-    this.drawAnalyser.animationStop()
+    if (this.drawSpectrumAnalyser instanceof DrawSpectrumAnalyser) {
+      this.drawSpectrumAnalyser.animationStop()
+    }
+    if (this.drawTimeDomainAnalyser instanceof DrawTimeDomainAnalyser) {
+      this.drawTimeDomainAnalyser.animationStop()
+    }
   }
 
-  createAnalyser(
+  /**
+   *
+   *
+   * @param {HTMLCanvasElement} elm
+   * @param {number} canvasWidth
+   * @param {number} canvasHeihgt
+   */
+  createSpectrumAnalyser(
     elm: HTMLCanvasElement,
     canvasWidth: number,
     canvasHeihgt: number
   ) {
     this.avesAnalyser = new AvesAnalyser(this.aves)
-    this.drawAnalyser = new DrawAnalyser(elm, canvasWidth, canvasHeihgt)
+    this.drawSpectrumAnalyser = new DrawSpectrumAnalyser(
+      elm,
+      canvasWidth,
+      canvasHeihgt
+    )
+  }
+
+  /**
+   *
+   *
+   * @param {HTMLCanvasElement} elm
+   * @param {number} canvasWidth
+   * @param {number} canvasHeihgt
+   */
+  createTimeDomainAnalyser(
+    elm: HTMLCanvasElement,
+    canvasWidth: number,
+    canvasHeihgt: number
+  ) {
+    this.avesAnalyser = new AvesAnalyser(this.aves)
+    this.drawTimeDomainAnalyser = new DrawTimeDomainAnalyser(
+      elm,
+      canvasWidth,
+      canvasHeihgt
+    )
   }
 }

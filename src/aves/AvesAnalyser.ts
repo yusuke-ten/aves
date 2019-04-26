@@ -67,6 +67,13 @@ export default class {
   }
 
   /**
+   * サンプルとサンプルの間の秒
+   * @returns
+   */
+  samplingInterval(): number {
+    return  1 / this.sampleRate
+  }
+  /**
    * 表示するHzの最大と最低に当たるインデックス番号を返す
    */
   get maxHzIndex(): number {

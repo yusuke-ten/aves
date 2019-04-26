@@ -174,7 +174,7 @@ export default class {
     const scaleStyle = this.createColor(250, 250, 250, 1)
 
     // ─────────────────────────────────────────────────────────────────
-    // 後からX軸に目盛りを描画するので今はデータを保存だけ
+    // X軸に目盛りを描画
     // ─────────────────────────────────────────────────────────────────
     for (const value of DispHzAndX) {
       this._ctx.fillStyle = gridStyle

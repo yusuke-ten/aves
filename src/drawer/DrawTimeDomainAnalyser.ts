@@ -6,6 +6,8 @@ export default class {
   private _ctx: CanvasRenderingContext2D
   private _animationFrameId: number
   private _bgColor: string
+  private gridStyle: string = this.createColor(230, 230, 230, 0.5)
+  private scaleStyle: string = this.createColor(250, 250, 250, 1)
   private _dispHz: number[] = [
     30,
     50,
@@ -106,50 +108,67 @@ export default class {
    * @param {AvesAnalyser} avesAnalyser
    */
   draw(avesAnalyser: AvesAnalyser) {
-    const arrayLength = avesAnalyser.byteTimeDomainArray.length
-    const gridStyle = this.createColor(230, 230, 230, 0.5)
-    const period = 1 / avesAnalyser.sampleRate
+    // ─────────────────────────────────────────────────────────────────
+    // 初期化処理
+    // ─────────────────────────────────────────────────────────────────
+    const arrayLength: number = avesAnalyser.byteTimeDomainArray.length
     this._ctx.beginPath()
+    const fontSize = 11
+    this._ctx.font = this.createFont(String(fontSize) + 'px')
     this._ctx.fillStyle = this._bgColor
     this._ctx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
-    // ─────────────────────────────────────────────────────────────────
-    // avesAnalyser.byteTimeDomainArrayの中身の数値は0~255
-    for (let i = 0; i <= arrayLength; i++) {
-      const pointX = (i / arrayLength) * this._canvasWidth
 
+    // ─────────────────────────────────────────────────────────────────
+    // デフォルトでは2048までループ
+    // ─────────────────────────────────────────────────────────────────
+    for (let i = 0; i <= arrayLength; i++) {
+      // ─────────────────────────────────────────────────────────────────
+      // プロットする点を得る処理
+      // ─────────────────────────────────────────────────────────────────
+      const pointX = (i / arrayLength) * this._canvasWidth
+      // ─────────────────────────────────────────────────────────────────
+      // avesAnalyser.byteTimeDomainArrayの中身の数値は0~255
+      // ─────────────────────────────────────────────────────────────────
       const pointY =
         (1 - avesAnalyser.byteTimeDomainArray[i] / 255) * this._canvasHeight
-
       if (i === 0) {
         this._ctx.moveTo(0, pointY)
       } else {
         this._ctx.lineTo(pointX, pointY)
       }
 
-      var sec = i * period // index -> time
-      var msec = sec * Math.pow(10, 3) // sec -> msec
-      // 5 msec ?
+      // ─────────────────────────────────────────────────────────────────
+      // X軸に目盛りを描画
+      // ─────────────────────────────────────────────────────────────────
+      const sec = i * avesAnalyser.samplingInterval()
+      const msec = sec * Math.pow(10, 3)
       if (msec % 5 === 0) {
-        this._ctx.fillStyle = gridStyle
         var text = Math.round(msec) + ' msec'
-        // Draw grid (X)
+        this._ctx.fillStyle = this.gridStyle
         this._ctx.fillRect(pointX, 0, 1, this._canvasHeight)
-        // Draw text (X)
-        this._ctx.fillText(text, pointX, this._canvasHeight)
+        this._ctx.fillStyle = this.scaleStyle
+        this._ctx.fillText(text, pointX + 4, this._canvasHeight - fontSize)
       }
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    // グラフを描画
+    // ─────────────────────────────────────────────────────────────────
     this._ctx.strokeStyle = this.createColor(250, 250, 250, 1)
     this._ctx.lineWidth = 1
     this._ctx.stroke()
 
+    // ─────────────────────────────────────────────────────────────────
+    // Y軸に目盛りを描画
+    // ─────────────────────────────────────────────────────────────────
     var textYs = ['1.00', '0.00', '-1.00']
     for (var i = 0, len = textYs.length; i < len; i++) {
       var text = textYs[i]
       var gy = ((1 - parseFloat(text)) / 2) * this._canvasHeight
-      // Draw grid (Y)
+      this._ctx.fillStyle = this.gridStyle
       this._ctx.fillRect(0, gy, this._canvasWidth, 1)
-      // Draw text (Y)
-      this._ctx.fillText(text, 0, gy)
+      this._ctx.fillStyle = this.scaleStyle
+      this._ctx.fillText(text, 5, gy + 12)
     }
   }
 

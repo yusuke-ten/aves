@@ -1,14 +1,18 @@
 import Aves from './aves/Aves'
 import AvesAnalyser from './aves/AvesAnalyser'
+import AvesChannels from './aves/AvesChannels'
 import DrawSpectrumAnalyser from './drawer/DrawSpectrumAnalyser'
 import DrawTimeDomainAnalyser from './drawer/DrawTimeDomainAnalyser'
+import DrawChannelWaves from './drawer/DrawChannelWaves'
 
 export default class {
   // Class member
   public aves: Aves
   public avesAnalyser: AvesAnalyser
+  public avesChannels: AvesChannels
   public drawSpectrumAnalyser: DrawSpectrumAnalyser
   public drawTimeDomainAnalyser: DrawTimeDomainAnalyser
+  public drawChannelWaves: DrawChannelWaves
 
   constructor() {
     this.aves = new Aves()
@@ -87,5 +91,26 @@ export default class {
       canvasWidth,
       canvasHeihgt
     )
+  }
+
+  /**
+   *
+   *
+   * @param {HTMLCanvasElement} elm
+   * @param {number} canvasWidth
+   * @param {number} canvasHeihgt
+   */
+  createAudioWave(
+    elm: HTMLCanvasElement,
+    canvasWidth: number,
+    canvasHeihgt: number
+  ) {
+    this.avesChannels = new AvesChannels(this.aves)
+    this.drawChannelWaves = new DrawChannelWaves(
+      elm,
+      canvasWidth,
+      canvasHeihgt
+    )
+    this.drawChannelWaves.draw(this.avesChannels)
   }
 }

@@ -1,6 +1,7 @@
 export default class {
   public audioCtx: AudioContext
   public sampleRate: number
+  public audioBuffer: AudioBuffer
   public source: AudioBufferSourceNode
   // private
   constructor() {
@@ -14,6 +15,7 @@ export default class {
     return this.audioCtx
       .decodeAudioData(audioData)
       .then((buffer: AudioBuffer) => {
+        this.audioBuffer = buffer
         this.source.buffer = buffer
         return this.source
       })

@@ -23,9 +23,13 @@
           request.onload = function() {
             const audioData = request.response
             aves = new Aves()
-            aves.loadAudio(audioData)
-            const canvasElm = document.querySelector('#canvas')
-            aves.createTimeDomainAnalyser(canvasElm, 1000, 500)
+            aves.loadAudio(audioData).then(() => {
+              const canvasElm = document.querySelector('#canvas')
+              aves.createAudioWave(canvasElm, 1000, 500)
+            })
+            // const canvasElm2 = document.querySelector('#canvas2')
+            // aves.createSpectrumAnalyser(canvasElm, 1000, 500)
+            // aves.createTimeDomainAnalyser(canvasElm2, 1000, 500)
           }
           request.send()
         })
@@ -45,6 +49,9 @@
     <button id="stop">stop</button>
     <div>
       <canvas id="canvas"></canvas>
+    </div>
+    <div>
+      <canvas id="canvas2"></canvas>
     </div>
   </body>
 </html>

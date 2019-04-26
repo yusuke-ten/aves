@@ -3,11 +3,13 @@ export default class {
   private _analyserNode: AnalyserNode
   private _freqPerIndex: number
   private _bufferLength: number
-  public maxHz: number = 16000
   public unit8Array: Uint8Array
   public float32Array: Float32Array
   public timeDomainArray: Uint8Array
+  public maxHz: number = 16000
+  public minHz: number = 16000
   public maxHzIndex: number
+  public minHzIndex: number
   // private
   constructor(aves: Aves) {
     this._analyserNode = aves.audioCtx.createAnalyser()
@@ -23,7 +25,11 @@ export default class {
     this._freqPerIndex = aves.sampleRate / this._analyserNode.fftSize
 
     this.maxHz = 16000
+    this.minHz = 20
     this.maxHzIndex = Math.floor(this.maxHz / this._freqPerIndex)
+    this.minHzIndex = Math.floor(this.minHz / this._freqPerIndex)
+    this.maxDecibels = 0
+    this.minDecibels = -100
 
     // fftSize / 2
     this._bufferLength = this._analyserNode.frequencyBinCount
@@ -34,8 +40,25 @@ export default class {
   indexAtSpecificHz(hz: number): number {
     return Math.floor(hz / this._freqPerIndex)
   }
+
   hzAtSpecificIndex(index: number): number {
     return index * this._freqPerIndex
+  }
+
+  range() {
+    return this._analyserNode.maxDecibels - this._analyserNode.minDecibels
+  }
+  set maxDecibels(num: number) {
+    this._analyserNode.maxDecibels = num
+  }
+  get maxDecibels(): number {
+    return this._analyserNode.maxDecibels
+  }
+  set minDecibels(num: number) {
+    this._analyserNode.minDecibels = num
+  }
+  get minDecibels(): number {
+    return this._analyserNode.minDecibels
   }
 
   getByteFrequencyData() {

@@ -7,7 +7,7 @@ export default class {
   private _animationFrameId: number
   private _bgColor: string = 'rgb(70, 70, 70)'
   private _dispHz: number[] = [
-    20,
+    30,
     50,
     100,
     200,
@@ -36,7 +36,12 @@ export default class {
     this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
   }
 
+  seekDigit(num: number) {
+    return Math.LOG10E * Math.log(num)
+  }
+
   drawFrame(avesAnalyser: AvesAnalyser) {
+    this._canvasCtx.beginPath()
     this._canvasCtx.fillStyle = this._bgColor
     this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
 
@@ -51,35 +56,39 @@ export default class {
     }
 
     let x: number = 0
-    for (let i: number = 0; i < avesAnalyser.maxHzIndex; i++) {
+    for (let i: number = 0; i <= avesAnalyser.maxHzIndex; i++) {
+      if (i <= avesAnalyser.minHzIndex) {
+        continue
+      }
+      x =
+        ((this.seekDigit(avesAnalyser.hzAtSpecificIndex(i)) -
+          this.seekDigit(avesAnalyser.minHz)) /
+          (this.seekDigit(avesAnalyser.maxHz) -
+            this.seekDigit(avesAnalyser.minHz))) *
+        this._canvasWidth
       for (const hz of this._dispHz) {
         if (avesAnalyser.indexAtSpecificHz(hz) === i) {
-
-          // console.log(this._canvasWidth / (Math.LOG10E * Math.log(avesAnalyser.maxHzIndex)))
-
           const text: string = hz < 1000 ? String(hz) : String(hz / 1000)
           // Draw grid (X)
           this._canvasCtx.fillStyle = `rgb(50,255,50)`
-          this._canvasCtx.fillRect(
-            (this._canvasWidth / (Math.LOG10E * Math.log(avesAnalyser.maxHz))) *
-              (Math.LOG10E * Math.log(hz)),
-            0,
-            1,
-            this._canvasHeight
-          )
+          this._canvasCtx.fillRect(x, 0, 1, this._canvasHeight)
           // Draw text (X)
-          this._canvasCtx.fillText(
-            text,
-            (this._canvasWidth / (Math.LOG10E * Math.log(avesAnalyser.maxHz))) *
-              (Math.LOG10E * Math.log(hz)),
-            this._canvasHeight
-          )
+          this._canvasCtx.fillText(text, x, this._canvasHeight)
         }
       }
-      x +=
-        this._canvasWidth /
-        (Math.LOG10E * Math.log(avesAnalyser.hzAtSpecificIndex(i)))
+      let barHeight: number =
+        -1 *
+        ((avesAnalyser.float32Array[i] - avesAnalyser.maxDecibels) /
+          avesAnalyser.range()) *
+        this._canvasHeight
+
+      if (i === avesAnalyser.minHzIndex) {
+        this._canvasCtx.moveTo(0, barHeight)
+      } else {
+        this._canvasCtx.lineTo(x, barHeight)
+      }
     }
+    this._canvasCtx.stroke()
   }
 
   drawAnalyser(avesAnalyser: AvesAnalyser) {
@@ -109,9 +118,9 @@ export default class {
   }
 
   animationStart(avesAnalyser: AvesAnalyser) {
-    avesAnalyser.getByteFrequencyData()
+    avesAnalyser.getFloatFrequencyData()
     this.drawFrame(avesAnalyser)
-    this.drawAnalyser(avesAnalyser)
+    // this.drawAnalyser(avesAnalyser)
 
     this._animationFrameId = requestAnimationFrame(() =>
       this.animationStart(avesAnalyser)

@@ -96,60 +96,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/aves/analyser.ts":
-/*!******************************!*\
-  !*** ./src/aves/analyser.ts ***!
-  \******************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-var default_1 = /** @class */ (function () {
-    // private
-    function default_1(aves) {
-        this.analyserNode = aves.audioCtx.createAnalyser();
-        aves.source.connect(this.analyserNode);
-        // default 2048
-        this.analyserNode.fftSize = 2048;
-        // Array[0] is the strength of frequencies from 0 to 23.4Hz.
-        // Array[1] is the strength of frequencies from 23.4Hz to 46.8Hz.
-        // Array[2] is the strength of frequencies from 46.8Hz to 70.2Hz.
-        // Array[3] is the strength of frequencies from 70.2Hz to 93.6Hz.
-        // ...
-        this.freqDivBufferLength = aves.sampleRate / this.analyserNode.fftSize;
-        console.log(aves.sampleRate);
-        this._n500Hz = Math.floor(500 / this.freqDivBufferLength);
-        this._maxHz = 16000;
-        this._maxHzIndex = Math.floor(this._maxHz / this.freqDivBufferLength);
-        console.log(this._maxHzIndex);
-        // fftSize / 2
-        this._bufferLength = this.analyserNode.frequencyBinCount;
-        this._unit8Array = new Uint8Array(this._bufferLength);
-        this._float32Array = new Float32Array(this._bufferLength);
-    }
-    default_1.prototype.freqDivIndex = function (index) {
-        return index * this.freqDivBufferLength;
-    };
-    default_1.prototype.getByteFrequencyData = function () {
-        this.analyserNode.getByteFrequencyData(this._unit8Array);
-    };
-    default_1.prototype.getFloatFrequencyData = function () {
-        this.analyserNode.getFloatFrequencyData(this._float32Array);
-    };
-    default_1.prototype.getByteTimeDomainData = function () {
-        this.analyserNode.getByteTimeDomainData(this._timeDomainArray);
-    };
-    return default_1;
-}());
-/* harmony default export */ __webpack_exports__["default"] = (default_1);
-
-
-/***/ }),
-
-/***/ "./src/aves/core.ts":
+/***/ "./src/aves/Aves.ts":
 /*!**************************!*\
-  !*** ./src/aves/core.ts ***!
+  !*** ./src/aves/Aves.ts ***!
   \**************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -186,79 +135,99 @@ var default_1 = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/drawer/analyser.ts":
-/*!********************************!*\
-  !*** ./src/drawer/analyser.ts ***!
-  \********************************/
+/***/ "./src/aves/AvesAnalyser.ts":
+/*!**********************************!*\
+  !*** ./src/aves/AvesAnalyser.ts ***!
+  \**********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 var default_1 = /** @class */ (function () {
-    function default_1(elm, canvasWidth, canvasHeihgt) {
-        this._bgColor = 'rgb(70, 70, 70)';
-        try {
-            console.log('construct');
-            console.log(elm);
-            this._canvasElm = elm;
-            this._canvasElm.width = canvasWidth;
-            this._canvasElm.height = canvasHeihgt;
-            this._canvasCtx = this._canvasElm.getContext('2d');
-            this._canvasCtx.fillStyle = this._bgColor;
-            this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
-            this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
-            this._canvasCtx.strokeStyle = 'white';
-            this._canvasCtx.strokeText('青色でstrokText', 10, 25);
-            console.log('construct end');
-            console.log(this._canvasCtx);
-        }
-        catch (error) {
-            console.log(error);
-        }
+    // private
+    function default_1(aves) {
+        this.maxHz = 16000;
+        this.minHz = 16000;
+        this._analyserNode = aves.audioCtx.createAnalyser();
+        aves.source.connect(this._analyserNode);
+        // default 2048
+        this._analyserNode.fftSize = 2048;
+        // Array[0] is the strength of frequencies from 0 to 23.4Hz.
+        // Array[1] is the strength of frequencies from 23.4Hz to 46.8Hz.
+        // Array[2] is the strength of frequencies from 46.8Hz to 70.2Hz.
+        // Array[3] is the strength of frequencies from 70.2Hz to 93.6Hz. ...
+        this._freqPerIndex = aves.sampleRate / this._analyserNode.fftSize;
+        this.maxHz = 16000;
+        this.minHz = 20;
+        this.maxHzIndex = Math.floor(this.maxHz / this._freqPerIndex);
+        this.minHzIndex = Math.floor(this.minHz / this._freqPerIndex);
+        // fftSize / 2
+        this._bufferLength = this._analyserNode.frequencyBinCount;
+        this.unit8Array = new Uint8Array(this._bufferLength);
+        this.float32Array = new Float32Array(this._bufferLength);
     }
-    default_1.prototype.drawAnalyser = function (avesAnalyser) {
-        var barWidth = this._canvasWidth / avesAnalyser._maxHzIndex;
-        // const hz = avesAnalyser._sampleRate / avesAnalyser._analyserNode.fftSize
-        var x = 0;
-        var barHeightArray = [];
-        for (var i = 0; i < avesAnalyser._bufferLength; i++) {
-            if (i > avesAnalyser._maxHzIndex)
-                break;
-            // let barHeight: number = avesAnalyser._avesAnalyser[i]
-            var barHeight = (avesAnalyser._unit8Array[i] / 255) * this._canvasHeight;
-            barHeightArray.push(barHeight);
-            this._canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
-            this._canvasCtx.fillRect(x, this._canvasHeight - barHeight, barWidth, barHeight);
-            x += barWidth;
-        }
+    default_1.prototype.indexAtSpecificHz = function (hz) {
+        return Math.floor(hz / this._freqPerIndex);
     };
-    default_1.prototype.animationStart = function (avesAnalyser) {
-        var _this = this;
-        this._animationFrameId = requestAnimationFrame(function () {
-            return _this.animationStart(avesAnalyser);
-        });
+    default_1.prototype.hzAtSpecificIndex = function (index) {
+        return index * this._freqPerIndex;
+    };
+    default_1.prototype.getByteFrequencyData = function () {
+        this._analyserNode.getByteFrequencyData(this.unit8Array);
+    };
+    default_1.prototype.getFloatFrequencyData = function () {
+        this._analyserNode.getFloatFrequencyData(this.float32Array);
+    };
+    default_1.prototype.getByteTimeDomainData = function () {
+        this._analyserNode.getByteTimeDomainData(this.timeDomainArray);
+    };
+    return default_1;
+}());
+/* harmony default export */ __webpack_exports__["default"] = (default_1);
+
+
+/***/ }),
+
+/***/ "./src/drawer/DrawAnalyser.ts":
+/*!************************************!*\
+  !*** ./src/drawer/DrawAnalyser.ts ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var default_1 = /** @class */ (function () {
+    function default_1(elm, canvasHeihgt, canvasWidth) {
+        this._bgColor = 'rgb(70, 70, 70)';
+        this._dispHz = [
+            30,
+            50,
+            100,
+            200,
+            500,
+            1000,
+            2000,
+            5000,
+            10000,
+            15000
+        ];
+        this._canvasElm = elm;
+        this._canvasElm.width = this._canvasWidth = canvasWidth;
+        this._canvasElm.height = this._canvasHeight = canvasHeihgt;
+        this._canvasCtx = this._canvasElm.getContext('2d');
+        this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
         this._canvasCtx.fillStyle = this._bgColor;
         this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
-        avesAnalyser.getByteFrequencyData();
-        var barWidth = this._canvasWidth / avesAnalyser._bufferLength;
-        var x = 0;
-        for (var i_1 = 0; i_1 < avesAnalyser._bufferLength; i_1++) {
-            var f = Math.floor(i_1 * avesAnalyser.freqDivBufferLength); // index -> frequency
-            // 500 Hz ?
-            if (i_1 % avesAnalyser._n500Hz === 0) {
-                if (i_1 > avesAnalyser._maxHzIndex)
-                    break;
-                var f = Math.floor(500 * (i_1 / avesAnalyser._n500Hz)); // index -> frequency
-                var text = f < 1000 ? f + ' Hz' : f / 1000 + ' kHz';
-                // Draw grid (X)
-                this._canvasCtx.fillStyle = "rgb(50,255,50)";
-                this._canvasCtx.fillRect(x, 0, 1, this._canvasHeight);
-                // Draw text (X)
-                this._canvasCtx.fillText(text, x, this._canvasHeight);
-            }
-            x += this._canvasWidth / avesAnalyser._maxHzIndex;
-        }
+    }
+    default_1.prototype.seekDigit = function (num) {
+        return Math.LOG10E * Math.log(num);
+    };
+    default_1.prototype.drawFrame = function (avesAnalyser) {
+        this._canvasCtx.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
+        this._canvasCtx.fillStyle = this._bgColor;
+        this._canvasCtx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
         var textYs = ['1.00', '0.50', '0.00'];
         for (var i = 0, len = textYs.length; i < len; i++) {
             var text = textYs[i];
@@ -268,7 +237,73 @@ var default_1 = /** @class */ (function () {
             // Draw text (Y)
             this._canvasCtx.fillText(text, 0, gy);
         }
-        this.drawAnalyser(avesAnalyser);
+        var x = 0;
+        for (var i = 0; i <= avesAnalyser.maxHzIndex; i++) {
+            if (i <= avesAnalyser.minHzIndex) {
+                continue;
+            }
+            x =
+                ((this.seekDigit(avesAnalyser.hzAtSpecificIndex(i)) -
+                    this.seekDigit(avesAnalyser.minHz)) /
+                    (this.seekDigit(avesAnalyser.maxHz) -
+                        this.seekDigit(avesAnalyser.minHz))) *
+                    this._canvasWidth;
+            for (var _i = 0, _a = this._dispHz; _i < _a.length; _i++) {
+                var hz = _a[_i];
+                if (avesAnalyser.indexAtSpecificHz(hz) === i) {
+                    var text = hz < 1000 ? String(hz) : String(hz / 1000);
+                    // Draw grid (X)
+                    this._canvasCtx.fillStyle = "rgb(50,255,50)";
+                    this._canvasCtx.fillRect(x, 0, 1, this._canvasHeight);
+                    // Draw text (X)
+                    this._canvasCtx.fillText(text, x, this._canvasHeight);
+                }
+            }
+            var barHeight = (avesAnalyser.unit8Array[i] / 255) * this._canvasHeight;
+            // ((this.seekDigit(avesAnalyser.hzAtSpecificIndex(i)) -
+            //   this.seekDigit(avesAnalyser.minHz)) /
+            //   (this.seekDigit(avesAnalyser.maxHz) -
+            //     this.seekDigit(avesAnalyser.minHz))) *
+            // this._canvasCtx.beginPath();
+            this._canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
+            if (i === avesAnalyser.minHzIndex) {
+                this._canvasCtx.moveTo(0, this._canvasHeight - barHeight);
+            }
+            else {
+                this._canvasCtx.lineTo(x, this._canvasHeight - barHeight);
+            }
+            // this._canvasCtx.fillRect(
+            //   x,
+            //   this._canvasHeight - barHeight,
+            //   barWidth,
+            //   barHeight
+            // )
+        }
+        // this._canvasCtx.fillStyle = `rgb(50,255,50)`
+        this._canvasCtx.closePath();
+        this._canvasCtx.stroke();
+    };
+    default_1.prototype.drawAnalyser = function (avesAnalyser) {
+        var barWidth = this._canvasWidth / avesAnalyser.maxHzIndex;
+        var x = 0;
+        var barHeightArray = [];
+        for (var i = 0; i < avesAnalyser.maxHzIndex; i++) {
+            // let barHeight: number = avesAnalyser._avesAnalyser[i]
+            var barHeight = (avesAnalyser.unit8Array[i] / 255) * this._canvasHeight;
+            barHeightArray.push(barHeight);
+            this._canvasCtx.fillStyle = "rgb(" + (barHeight + 100) + ",50,50)";
+            this._canvasCtx.fillRect(x, this._canvasHeight - barHeight, barWidth, barHeight);
+            x += barWidth;
+        }
+    };
+    default_1.prototype.animationStart = function (avesAnalyser) {
+        var _this = this;
+        avesAnalyser.getByteFrequencyData();
+        this.drawFrame(avesAnalyser);
+        // this.drawAnalyser(avesAnalyser)
+        this._animationFrameId = requestAnimationFrame(function () {
+            return _this.animationStart(avesAnalyser);
+        });
     };
     default_1.prototype.animationStop = function () {
         cancelAnimationFrame(this._animationFrameId);
@@ -289,9 +324,9 @@ var default_1 = /** @class */ (function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _aves_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./aves/core */ "./src/aves/core.ts");
-/* harmony import */ var _aves_analyser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./aves/analyser */ "./src/aves/analyser.ts");
-/* harmony import */ var _drawer_analyser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./drawer/analyser */ "./src/drawer/analyser.ts");
+/* harmony import */ var _aves_Aves__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./aves/Aves */ "./src/aves/Aves.ts");
+/* harmony import */ var _aves_AvesAnalyser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./aves/AvesAnalyser */ "./src/aves/AvesAnalyser.ts");
+/* harmony import */ var _drawer_DrawAnalyser__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./drawer/DrawAnalyser */ "./src/drawer/DrawAnalyser.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -332,7 +367,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 var default_1 = /** @class */ (function () {
     function default_1() {
-        this.aves = new _aves_core__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        this.aves = new _aves_Aves__WEBPACK_IMPORTED_MODULE_0__["default"]();
     }
     default_1.prototype.loadAudio = function (audioData) {
         return __awaiter(this, void 0, void 0, function () {
@@ -358,11 +393,11 @@ var default_1 = /** @class */ (function () {
     };
     default_1.prototype.stop = function () {
         this.aves.stop();
-        // this.avesDrawer.animationStop()
+        this.drawAnalyser.animationStop();
     };
-    default_1.prototype.createAnalyser = function (elm, canvasWidth, canvasHeihgt) {
-        this.avesAnalyser = new _aves_analyser__WEBPACK_IMPORTED_MODULE_1__["default"](this.aves);
-        this.drawAnalyser = new _drawer_analyser__WEBPACK_IMPORTED_MODULE_2__["default"](elm, canvasWidth, canvasHeihgt);
+    default_1.prototype.createAnalyser = function (elm, canvasHeihgt, canvasWidth) {
+        this.avesAnalyser = new _aves_AvesAnalyser__WEBPACK_IMPORTED_MODULE_1__["default"](this.aves);
+        this.drawAnalyser = new _drawer_DrawAnalyser__WEBPACK_IMPORTED_MODULE_2__["default"](elm, canvasHeihgt, canvasWidth);
     };
     return default_1;
 }());

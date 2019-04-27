@@ -55,11 +55,14 @@ export default class {
   }
 
   draw(avesChannels: AvesChannels) {
-    console.log(avesChannels.channelLs)
+    const startTime = performance.now()
     this._ctx.beginPath()
-    for (var i = 0, len = avesChannels.channelLs.length; i < len; i++) {
-      var x = (i / len) * this._canvasWidth
-      var y = ((1 - avesChannels.channelLs[i]) / 2) * this._canvasHeight
+    const length = avesChannels.channelLs.length
+
+    for (var i = 0; i < length / 10000; i++) {
+      var x = ((i * 10000) / length) * this._canvasWidth
+      var y = ((1 - avesChannels.channelLs[i * 10000]) / 2) * this._canvasHeight
+
       if (i === 0) {
         this._ctx.moveTo(x, y)
       } else {
@@ -67,5 +70,7 @@ export default class {
       }
     }
     this._ctx.stroke()
+    const endTime = performance.now()
+    console.log(endTime - startTime)
   }
 }

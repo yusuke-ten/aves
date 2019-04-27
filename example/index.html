@@ -25,8 +25,8 @@
             aves = new Aves()
             aves.loadAudio(audioData).then(() => {
               const canvasElm = document.querySelector('#canvas')
-              aves.createSpectrumAnalyser(canvasElm, 1000, 500)
-              // aves.createAudioWave(canvasElm, 1000, 500)
+              // aves.createSpectrumAnalyser(canvasElm, 1000, 500)
+              aves.createAudioWave(canvasElm, 1000, 500)
             })
             // const canvasElm2 = document.querySelector('#canvas2')
             // aves.createTimeDomainAnalyser(canvasElm2, 1000, 500)

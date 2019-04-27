@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
+    "dev": "webpack-dev-server -d --progress --colors --display-error-details",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

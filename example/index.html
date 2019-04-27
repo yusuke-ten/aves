@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Page Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/main.css" />
-    <script src="index.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="dist/index.js"></script>
     <script>
       window.onload = function() {
         let aves
@@ -25,10 +25,10 @@
             aves = new Aves()
             aves.loadAudio(audioData).then(() => {
               const canvasElm = document.querySelector('#canvas')
-              aves.createAudioWave(canvasElm, 1000, 500)
+              aves.createSpectrumAnalyser(canvasElm, 1000, 500)
+              // aves.createAudioWave(canvasElm, 1000, 500)
             })
             // const canvasElm2 = document.querySelector('#canvas2')
-            // aves.createSpectrumAnalyser(canvasElm, 1000, 500)
             // aves.createTimeDomainAnalyser(canvasElm2, 1000, 500)
           }
           request.send()

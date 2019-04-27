@@ -1,8 +1,12 @@
 module.exports = {
   mode: 'development',
+  devtool: 'source-map',
   // メインとなるJavaScriptファイル（エントリーポイント）
   entry: `./src/index.ts`,
-
+  // import 文で .ts ファイルを解決するため
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.css']
+  },
   // ファイルの出力設定
   output: {
     //  出力ファイルのディレクトリ名
@@ -11,7 +15,8 @@ module.exports = {
     libraryTarget: 'umd',
     path: `${__dirname}/dist`,
     // 出力ファイル名
-    filename: 'index.js'
+    filename: 'index.js',
+    publicPath: "/dist/"
   },
   module: {
     rules: [
@@ -24,13 +29,7 @@ module.exports = {
       }
     ]
   },
-  // import 文で .ts ファイルを解決するため
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.css']
-  },
   devServer: {
-    contentBase: 'dist',
-    open: true
-  },
-  devtool: 'source-map'
+    contentBase: 'example'
+  }
 }

@@ -18,7 +18,6 @@ export default class {
     this.aves = new Aves()
   }
 
-
   /**
    *
    *
@@ -106,11 +105,7 @@ export default class {
     canvasHeihgt: number
   ) {
     this.avesChannels = new AvesChannels(this.aves)
-    this.drawChannelWaves = new DrawChannelWaves(
-      elm,
-      canvasWidth,
-      canvasHeihgt
-    )
+    this.drawChannelWaves = new DrawChannelWaves(elm, canvasWidth, canvasHeihgt)
     this.drawChannelWaves.draw(this.avesChannels)
   }
 }

@@ -58,9 +58,11 @@ export default class {
     const startTime = performance.now()
     this._ctx.beginPath()
     const length = avesChannels.channelLs.length
+    const n50msec = avesChannels.indexAtspecificMSec(50)
 
     for (var i = 0; i < length / 10000; i++) {
       var x = ((i * 10000) / length) * this._canvasWidth
+      const channle = avesChannels.channelLs[i * 10000]
       var y = ((1 - avesChannels.channelLs[i * 10000]) / 2) * this._canvasHeight
 
       if (i === 0) {

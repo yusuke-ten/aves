@@ -9,6 +9,7 @@
       "request": "launch",
       "sourceMapPathOverrides": {
         "webpack:///./src/*": "${workspaceRoot}/src/*",
+        "webpack:///./src/*/*": "${workspaceRoot}/src/*/*",
         "webpack:///src/*": "${workspaceRoot}/src/*"
       },
       "sourceMaps": true,

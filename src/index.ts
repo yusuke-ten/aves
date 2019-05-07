@@ -57,18 +57,18 @@ export default class {
    *
    * @param {HTMLCanvasElement} elm
    * @param {number} canvasWidth
-   * @param {number} canvasHeihgt
+   * @param {number} canvasHeight
    */
   createSpectrumAnalyser(
     elm: HTMLCanvasElement,
     canvasWidth: number,
-    canvasHeihgt: number
+    canvasHeight: number
   ) {
     this.avesAnalyser = new AvesAnalyser(this.aves)
     this.drawSpectrumAnalyser = new DrawSpectrumAnalyser(
       elm,
       canvasWidth,
-      canvasHeihgt
+      canvasHeight
     )
   }
 
@@ -77,18 +77,18 @@ export default class {
    *
    * @param {HTMLCanvasElement} elm
    * @param {number} canvasWidth
-   * @param {number} canvasHeihgt
+   * @param {number} canvasHeight
    */
   createTimeDomainAnalyser(
     elm: HTMLCanvasElement,
     canvasWidth: number,
-    canvasHeihgt: number
+    canvasHeight: number
   ) {
     this.avesAnalyser = new AvesAnalyser(this.aves)
     this.drawTimeDomainAnalyser = new DrawTimeDomainAnalyser(
       elm,
       canvasWidth,
-      canvasHeihgt
+      canvasHeight
     )
   }
 
@@ -97,15 +97,15 @@ export default class {
    *
    * @param {HTMLCanvasElement} elm
    * @param {number} canvasWidth
-   * @param {number} canvasHeihgt
+   * @param {number} canvasHeight
    */
   createAudioWave(
     elm: HTMLCanvasElement,
     canvasWidth: number,
-    canvasHeihgt: number
+    canvasHeight: number
   ) {
     this.avesChannels = new AvesChannels(this.aves)
-    this.drawChannelWaves = new DrawChannelWaves(elm, canvasWidth, canvasHeihgt)
+    this.drawChannelWaves = new DrawChannelWaves(elm, canvasWidth, canvasHeight)
     this.drawChannelWaves.draw(this.avesChannels)
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "aves.js",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Audio spectrum analyzer written in type script. Developed using web audio api.",
   "main": "dist/index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/yusuke-ten/aves.git"
   },
-  "keywords": [],
+  "keywords": ["audio", "spectrum", "analyser"],
   "author": "yusuke_ten",
   "license": "MIT",
   "bugs": {
@@ -26,8 +26,5 @@
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.2.1"
-  },
-  "dependencies": {
-    "dat.gui": "^0.7.6"
   }
 }

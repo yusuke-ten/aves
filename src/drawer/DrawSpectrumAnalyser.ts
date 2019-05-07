@@ -34,12 +34,12 @@ export default class {
   constructor(
     elm: HTMLCanvasElement,
     canvasWidth: number,
-    canvasHeihgt: number
+    canvasHeight: number
   ) {
     this._canvasElm = elm
 
     this._canvasElm.width = this._canvasWidth = canvasWidth
-    this._canvasElm.height = this._canvasHeight = canvasHeihgt
+    this._canvasElm.height = this._canvasHeight = canvasHeight
 
     this._ctx = this._canvasElm.getContext('2d')
 

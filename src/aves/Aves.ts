@@ -5,6 +5,9 @@ export default class {
   public source: AudioBufferSourceNode
   // private
   constructor() {
+    if (!window) {
+      throw new Error('Window object not found!!')
+    }
     this.audioCtx = new AudioContext()
     this.sampleRate = this.audioCtx.sampleRate
     this.source = this.audioCtx.createBufferSource()

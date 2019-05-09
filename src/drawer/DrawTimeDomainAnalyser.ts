@@ -1,4 +1,5 @@
 import AvesAnalyser from '../aves/AvesAnalyser'
+import * as util from '../util'
 export default class {
   private _canvasWidth: number
   private _canvasHeight: number
@@ -6,38 +7,12 @@ export default class {
   private _ctx: CanvasRenderingContext2D
   private _animationFrameId: number
   private _bgColor: string
-  private gridStyle: string = this.createColor(230, 230, 230, 0.5)
-  private scaleStyle: string = this.createColor(250, 250, 250, 1)
-  private _dispHz: number[] = [
-    30,
-    50,
-    100,
-    200,
-    500,
-    1000,
-    2000,
-    5000,
-    10000,
-    15000
-  ]
-  private _dispDecibel: number[] = [
-    0,
-    -10,
-    -20,
-    -30,
-    -40,
-    -50,
-    -60,
-    -70,
-    -80,
-    -90
-  ]
+  private gridStyle: string = util.createColor(230, 230, 230, 0.5)
+  private scaleStyle: string = util.createColor(250, 250, 250, 1)
+  private _dispHz: number[] = [30, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 15000]
+  private _dispDecibel: number[] = [0, -10, -20, -30, -40, -50, -60, -70, -80, -90]
 
-  constructor(
-    elm: HTMLCanvasElement,
-    canvasWidth: number,
-    canvasHeight: number
-  ) {
+  constructor(elm: HTMLCanvasElement, canvasWidth: number, canvasHeight: number) {
     this._canvasElm = elm
 
     this._canvasElm.width = this._canvasWidth = canvasWidth
@@ -45,46 +20,11 @@ export default class {
 
     this._ctx = this._canvasElm.getContext('2d')
 
-    this._bgColor = this.createColor(46, 40, 48)
+    this._bgColor = util.createColor(46, 40, 48)
 
     this._ctx.clearRect(0, 0, this._canvasWidth, this._canvasHeight)
     this._ctx.fillStyle = this._bgColor
     this._ctx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
-  }
-
-  /**
-   * @param {number} num
-   * @returns 入力された数値の桁数を返す
-   */
-  seekDigit(num: number) {
-    return Math.LOG10E * Math.log(num)
-  }
-
-  /**
-   * @param {number} r Red
-   * @param {number} g Green
-   * @param {number} b Blue
-   * @param {number} a Alpha
-   * @returns {string} CSS rgba()
-   */
-  createColor(r: number, g: number, b: number, a: number = 1): string {
-    return `rgba(${r}, ${g}, ${b}, ${a})`
-  }
-
-  /**
-   *
-   * フォント情報ストリングを作成する、後々ヘルパーとかに切り分けたほうがいい
-   * @param {string} fontSize
-   * @param {string} [type='']
-   * @param {string} [font='sans-serif']
-   * @returns {string}
-   */
-  createFont(
-    fontSize: string,
-    type: string = '',
-    font: string = 'sans-serif'
-  ): string {
-    return `${type} ${fontSize} ${font}`
   }
 
   /**
@@ -97,8 +37,7 @@ export default class {
    */
   pointX(hz: number, minHz: number, maxHz: number): number {
     return (
-      ((this.seekDigit(hz) - this.seekDigit(minHz)) /
-        (this.seekDigit(maxHz) - this.seekDigit(minHz))) *
+      ((util.seekDigit(hz) - util.seekDigit(minHz)) / (util.seekDigit(maxHz) - util.seekDigit(minHz))) *
       this._canvasWidth
     )
   }
@@ -114,7 +53,7 @@ export default class {
     const arrayLength: number = avesAnalyser.byteTimeDomainArray.length
     this._ctx.beginPath()
     const fontSize = 11
-    this._ctx.font = this.createFont(String(fontSize) + 'px')
+    this._ctx.font = util.createFont(String(fontSize) + 'px')
     this._ctx.fillStyle = this._bgColor
     this._ctx.fillRect(0, 0, this._canvasWidth, this._canvasHeight)
 
@@ -129,8 +68,7 @@ export default class {
       // ─────────────────────────────────────────────────────────────────
       // avesAnalyser.byteTimeDomainArrayの中身の数値は0~255
       // ─────────────────────────────────────────────────────────────────
-      const pointY =
-        (1 - avesAnalyser.byteTimeDomainArray[i] / 255) * this._canvasHeight
+      const pointY = (1 - avesAnalyser.byteTimeDomainArray[i] / 255) * this._canvasHeight
       if (i === 0) {
         this._ctx.moveTo(0, pointY)
       } else {
@@ -154,7 +92,7 @@ export default class {
     // ─────────────────────────────────────────────────────────────────
     // グラフを描画
     // ─────────────────────────────────────────────────────────────────
-    this._ctx.strokeStyle = this.createColor(250, 250, 250, 1)
+    this._ctx.strokeStyle = util.createColor(250, 250, 250, 1)
     this._ctx.lineWidth = 1
     this._ctx.stroke()
 
@@ -182,9 +120,7 @@ export default class {
     avesAnalyser.getByteTimeDomainData()
     this.draw(avesAnalyser)
 
-    this._animationFrameId = requestAnimationFrame(() =>
-      this.animationStart(avesAnalyser)
-    )
+    this._animationFrameId = requestAnimationFrame(() => this.animationStart(avesAnalyser))
   }
 
   animationStop() {

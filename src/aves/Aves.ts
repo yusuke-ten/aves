@@ -15,13 +15,11 @@ export default class {
   }
 
   decodeAudio(audioData: ArrayBuffer): Promise<AudioBufferSourceNode> {
-    return this.audioCtx
-      .decodeAudioData(audioData)
-      .then((buffer: AudioBuffer) => {
-        this.audioBuffer = buffer
-        this.source.buffer = buffer
-        return this.source
-      })
+    return this.audioCtx.decodeAudioData(audioData).then((buffer: AudioBuffer) => {
+      this.audioBuffer = buffer
+      this.source.buffer = buffer
+      return this.source
+    })
   }
 
   start() {

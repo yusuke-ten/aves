@@ -27,7 +27,7 @@ export default class {
   // channnels配列の何番目の要素がmSecなのかを返す
   // サンプリングレイト44100の時、50msecは2205番目の要素
   // 2205番目周期で50msec,100msecは4410番目
-  indexAtspecificMSec(mSec: number) {
+  indexAtSpecificMSec(mSec: number) {
     return Math.floor(mSec * Math.pow(10, -3) * this.sampleRate)
   }
 }

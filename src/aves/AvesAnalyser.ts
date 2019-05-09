@@ -17,6 +17,7 @@ export default class {
     // default 2048
     this._analyserNode.fftSize = 2048
     this.sampleRate = aves.sampleRate
+
     // Array[0] is the strength of frequencies from 0 to 23.4Hz.
     // Array[1] is the strength of frequencies from 23.4Hz to 46.8Hz.
     // Array[2] is the strength of frequencies from 46.8Hz to 70.2Hz.
@@ -29,7 +30,7 @@ export default class {
     this.maxDecibels = 0
     this.minDecibels = -100
 
-    // fftSize / 2
+    // fftSize / 2　の数値が入る
     this._bufferLength = this._analyserNode.frequencyBinCount
 
     // ─────────────────────────────────────────────────────────────────
@@ -71,7 +72,7 @@ export default class {
    * @returns
    */
   samplingInterval(): number {
-    return  1 / this.sampleRate
+    return 1 / this.sampleRate
   }
   /**
    * 表示するHzの最大と最低に当たるインデックス番号を返す
